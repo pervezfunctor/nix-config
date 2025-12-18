@@ -28,6 +28,11 @@
       url = "github:caelestia-dots/shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    mango = {
+      url = "github:DreamMaoMao/mango";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -52,8 +57,14 @@
           modules = [
             ./configuration.nix
             ./virt.nix
+
             {
               programs.niri.enable = true;
+            }
+
+            inputs.mango.nixosModules.mango
+            {
+              programs.mango.enable = true;
             }
 
             # catppuccin.nixosModules.catppuccin
@@ -73,6 +84,7 @@
                     # inputs.noctalia.homeModules.default
                     # inputs.caelestia.homeManagerModules.default
                     inputs.dms.homeModules.dankMaterialShell.default
+                    inputs.mango.hmModules.mango
                   ]
                   ++ homeImports;
                 };
@@ -91,7 +103,7 @@
 
         hyprland = mkOS [ ./hyprland.nix ] [ ./home/dms.nix ];
 
-        all = mkOS [ ./hyprland.nix ./niri.nix ] [ ./hyprland-home.nix ./home/dms.nix ];
+        all = mkOS [ ./hyprland.nix ./niri.nix ] [ ./home/hyprland.nix ./home/dms.nix ./home/mango.nix ];
       };
     };
 }
