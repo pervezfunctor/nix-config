@@ -58,16 +58,23 @@
             ./configuration.nix
             ./virt.nix
 
-            {
-              programs.niri.enable = true;
-            }
-
             inputs.mango.nixosModules.mango
-            {
-              programs.mango.enable = true;
-            }
 
-            # catppuccin.nixosModules.catppuccin
+            {
+              environment.sessionVariables = {
+                XCURSOR_SIZE = "32";
+                XCURSOR_THEME = "Adwaita";
+              };
+
+              services.gnome.gnome-keyring.enable = true;
+              security.polkit.enable = true;
+              services.dbus.enable = true;
+
+              programs.niri.enable = true;
+              programs.mango.enable = true;
+              programs.sway.enable = true;
+            }
+            inputs.catppuccin.nixosModules.catppuccin
             home-manager.nixosModules.home-manager
             {
               home-manager = {
@@ -80,9 +87,9 @@
                 users.${vars.username} = {
                   imports = [
                     ./home.nix
-                    # catppuccin.homeModules.catppuccin
-                    # inputs.noctalia.homeModules.default
-                    # inputs.caelestia.homeManagerModules.default
+                    inputs.catppuccin.homeModules.catppuccin
+                    inputs.noctalia.homeModules.default
+                    inputs.caelestia.homeManagerModules.default
                     inputs.dms.homeModules.dankMaterialShell.default
                     inputs.mango.hmModules.mango
                   ]
@@ -103,7 +110,18 @@
 
         hyprland = mkOS [ ./hyprland.nix ] [ ./home/dms.nix ];
 
-        all = mkOS [ ./hyprland.nix ./niri.nix ] [ ./home/hyprland.nix ./home/dms.nix ./home/mango.nix ];
+        all =
+          mkOS
+            [
+              ./hyprland.nix
+              ./niri.nix
+            ]
+            [
+              ./home/hyprland.nix
+              ./home/dms.nix
+              ./home/mango.nix
+              ./home/sway.nix
+            ];
       };
     };
 }

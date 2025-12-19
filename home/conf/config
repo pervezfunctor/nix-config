@@ -1,0 +1,268 @@
+xwayland disable
+
+
+input "type:keyboard" {
+	xkb_options caps:ctrl_modifier
+}
+
+output HDMI-A-1 resolution 3840x2160 position 0,0 scale 1.5
+output HDMI-A-2 resolution 3840x2160 position 0,0 scale 1.5
+output DP-1 resolution 3840x2160 position 0,0 scale 1.5
+output DP-2 resolution 3840x2160 position 0,0 scale 1.5
+output Virtual-1 resolution 3840x2160 position 0,0 scale 1.5
+output eDP-1 resolution 1920x1080 position 0,0 scale 1.25
+
+set $mod Mod4
+
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+
+set $term ghostty
+
+set $rofi_cmd rofi -show drun
+set $menu $rofi_cmd
+
+# set $screenlock 'swaylock --config ~/.ilm/suseway/dot-config/swaylock.conf'
+set $screenlock 'dms ipc call lock lock'
+set $menu_window $rofi_cmd -show window
+set $wob wob --config /etc/sway/wob/wob.ini
+
+# exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+# exec /usr/libexec/lxqt-policykit-agent
+# exec /usr/libexec/polkit-gnome-authentication-agent-1
+
+exec dms run
+exec wl-paste --watch cliphist store
+
+exec swayidle -w \
+        timeout 240 'swaylock -f' \
+        timeout 300 'swaymsg "output * power off"' \
+        resume 'swaymsg "output * power on"'  \
+        timeout 180 'pgrep -xu "$USER" swaylock >/dev/null && swaymsg "output * power off"' \
+        resume 'pgrep -xu "$USER" swaylock >/dev/null && swaymsg "output * power on"'  \
+        before-sleep 'swaylock -f' \
+        lock 'swaylock -f' \
+        unlock 'pkill -xu "$USER" -SIGUSR1 swaylock' \
+        timeout 600 'systemctl suspend'
+
+exec_always {
+    systemctl --user import-environment
+    gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+    gsettings set org.gnome.desktop.interface icon-theme 'Adwaita'
+    gsettings set org.gnome.desktop.interface cursor-theme 'Adwaita'
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+    test -e $SWAYSOCK.wob || mkfifo $SWAYSOCK.wob
+    tail -f $SWAYSOCK.wob | $wob
+    swaync --style ~/.config/swaync/style.css --config ~/.config/swaync/config.json
+}
+
+default_border pixel 3
+default_floating_border pixel 3
+
+gaps inner 4
+gaps outer 2
+
+smart_borders on
+# smart_gaps on
+
+bindsym $mod+shift+g exec swaymsg gaps outer all set 0 && swaymsg gaps inner all set 5
+bindsym $mod+g exec swaymsg gaps outer all set 0 && swaymsg gaps inner all set 0
+
+
+bindsym $mod+Return exec $term
+bindsym $mod+Shift+q kill
+bindsym $mod+d exec $menu
+bindsym $mod+shift+d exec $menu_window
+
+floating_modifier $mod normal
+
+bindsym $mod+Shift+c reload
+
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Do you really want to exit sway?' -B 'Yes, exit sway' 'swaymsg exit'
+
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+
+bindsym $mod+Shift+1 move container to workspace number 1, workspace 1
+bindsym $mod+Shift+2 move container to workspace number 2, workspace 2
+bindsym $mod+Shift+3 move container to workspace number 3, workspace 3
+bindsym $mod+Shift+4 move container to workspace number 4, workspace 4
+bindsym $mod+Shift+5 move container to workspace number 5, workspace 5
+bindsym $mod+Shift+6 move container to workspace number 6, workspace 6
+bindsym $mod+Shift+7 move container to workspace number 7, workspace 7
+bindsym $mod+Shift+8 move container to workspace number 8, workspace 8
+bindsym $mod+Shift+9 move container to workspace number 9, workspace 9
+# bindsym $mod+Shift+0 move container to workspace number 10, workspace 10
+
+bindsym $mod+ctrl+left workspace next
+bindsym $mod+ctrl+right workspace prev
+bindsym $mod+shift+ctrl+left move container to workspace next, workspace next
+bindsym $mod+shift+ctrl+right move container to workspace prev, workspace prev
+
+bindsym $mod+b splith
+bindsym $mod+v splitv
+
+bindsym $mod+tab workspace next_on_output
+bindsym $mod+Shift+tab workspace prev_on_output
+
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+
+
+bindsym $mod+a focus parent
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
+bindsym $mod+alt+$left resize shrink width 10px
+bindsym $mod+alt+$down resize grow height 10px
+bindsym $mod+alt+$up resize shrink height 10px
+bindsym $mod+alt+$right resize grow width 10px
+bindsym $mod+alt+Left resize shrink width 10px
+bindsym $mod+alt+Down resize grow height 10px
+bindsym $mod+alt+Up resize shrink height 10px
+bindsym $mod+alt+Right resize grow width 10px
+
+mode "resize" {
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+set $selected_window swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp
+set $focused_window swaymsg -t get_tree | jq -j '.. | select(.type?) | select(.focused).rect | "\(.x),\(.y) \(.width)x\(.height)"'
+set $focused_output swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name'
+
+set $screenshot_full grim
+set $screenshot_full_clipboard grim - | wl-copy
+
+set $screenshot_selected_window $selected_window | grim -g-
+set $screenshot_selected_window_clipboard $selected_window | grim -g- - | wl-copy
+
+set $screenshot_selected_area slurp | grim -g-
+set $screenshot_selected_area_clipboard slurp | grim -g- - | wl-copy
+
+set $screenshot_focused_window $focused_window | grim -g-
+set $screenshot_focused_window_clipboard $focused_window | grim -g- - | wl-copy
+
+set $screenshot_focused_output grim -o $($focused_output)
+set $screenshot_focused_output_clipboard grim -o $($focused_output) - | wl-copy
+
+set $screenshot "Screenshot: (f) full, (s) select window, (a) select area, (w) focused window, (o) focused output [Ctrl+ saves to clipboard]"
+mode $screenshot {
+    # Full
+    bindsym f exec $screenshot_full; mode "default"
+    bindsym Ctrl+f exec $screenshot_full_clipboard; mode "default"
+    # Selected window
+    bindsym s exec $screenshot_selected_window; mode "default"
+    bindsym Ctrl+s exec $screenshot_selected_window_clipboard; mode "default"
+    # Selected area
+    bindsym a exec $screenshot_selected_area; mode "default"
+    bindsym Ctrl+a exec $screenshot_selected_area_clipboard; mode "default"
+    # Focused window
+    bindsym w exec $screenshot_focused_window; mode "default"
+    bindsym Ctrl+w exec $screenshot_focused_window_clipboard; mode "default"
+    # Focused output
+    bindsym o exec $screenshot_focused_output; mode "default"
+    bindsym Ctrl+o exec $screenshot_focused_output_clipboard; mode "default"
+
+    # Exit screenshot mode menu
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym $mod+Print mode "default"
+}
+bindsym $mod+Print mode $screenshot
+
+set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
+mode "$mode_system" {
+    bindsym l exec swaylock, mode "default"
+    bindsym s exec systemctl suspend, mode "default"
+    bindsym u exec systemctl restart sddm, mode "default"
+    bindsym e exec swaymsg exit, mode "default"
+    bindsym h exec systemctl hibernate, mode "default"
+    bindsym r exec systemctl reboot, mode "default"
+    bindsym Shift+s exec systemctl poweroff, mode "default"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+0 mode "$mode_system"
+
+# Open specific applications in floating mode
+for_window [title="File Transfer*"] floating enable
+for_window [class="qt5ct"] floating enable sticky enable border normal
+for_window [class="qt6ct"] floating enable sticky enable border normal
+for_window [app_id="(Calendar|Calculator|Power-statistics|Control-center)"] floating enable
+for_window [app_id="org.gnome.(Nautilus|Weather)"] floating enable
+for_window [app_id="nm-connection-editor"] floating enable
+for_window [app_id="(pavucontrol|psensor)"] floating enable
+for_window [app_id="mpv"] floating enable
+for_window [app_id="mpv"] resize set 960 540
+for_window [app_id="mpv"] border pixel 0
+for_window [app_id="firefox" title="Pushbullet"] floating enable
+for_window [app_id="firefox" title="Firefox — Sharing Indicator"] floating enable
+for_window [app_id="firefox" title="Picture-in-Picture"] floating enable
+for_window [title="Picture-in-picture"] floating enable
+for_window [app_id="firefox" title="Pushbullet – Mozilla Firefox"] floating enable
+for_window [app_id="firefox" title="About Mozilla Firefox"] floating enable
+for_window [app_id="lxqt-policykit-agent"] {
+    floating enable
+    move position center
+}
+
+for_window [app_id="org.mozilla.firefox"] opacity 0.98
+for_window [app_id="code"] opacity 0.98
+
+# DMS Keybindings
+bindsym $mod+shift+return exec dms ipc call spotlight toggle
+bindsym $mod+shift+v exec dms ipc call clipboard toggle
+bindsym $mod+shift+m exec dms ipc call processlist focusOrToggle
+bindsym $mod+comma exec dms ipc call settings focusOrToggle
+
+# # Audio controls
+# bindsym XF86AudioRaiseVolume exec dms ipc call audio increment 3
+# bindsym XF86AudioLowerVolume exec dms ipc call audio decrement 3
+# bindsym XF86AudioMute exec dms ipc call audio mute
+# # Brightness controls
+# bindsym XF86MonBrightnessUp exec dms ipc call brightness increment 5
+# bindsym XF86MonBrightnessDown exec dms ipc call brightness decrement 5

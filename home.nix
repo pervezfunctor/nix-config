@@ -1,4 +1,4 @@
-{ vars, ... }:
+{ vars, pkgs, ... }:
 
 {
   imports = [
@@ -8,6 +8,14 @@
   home.username = vars.username;
   home.homeDirectory = vars.homeDirectory;
   home.stateVersion = "25.11";
+
+  home.pointerCursor = {
+    gtk.enable = true;
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Ice";
+    size = 32;
+  };
+
   programs = {
     home-manager.enable = true;
 

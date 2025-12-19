@@ -6,8 +6,6 @@
     xwayland.enable = false;
   };
 
-  services.gnome.gnome-keyring.enable = true;
-
   environment.systemPackages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
