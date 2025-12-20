@@ -53,14 +53,13 @@
           modules = [
             ./configuration.nix
             ./core.nix
+            ./core.nix
             ./dev.nix
             ./apps.nix
             ./virt.nix
 
-            {
-              programs.sway.enable = true;
-            }
             home-manager.nixosModules.home-manager
+            ./homeModule.nix
             ./homeModule.nix
           ]
           ++ osModules;
@@ -73,7 +72,7 @@
           let
             sway = import ./sway.nix;
           in
-          mkOS [ sway.nixosModule ] [ sway.homeModule ./home/dms.nix ];
+          mkOS [ sway.nixosModule ] [ sway.homeModule ./home/noctalia.nix ];
 
         mango =
           mkOS

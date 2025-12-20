@@ -51,13 +51,6 @@
     zoxide
   ];
 
-  environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1";
-    EDITOR = "nvim";
-    # ELECTRON_ENABLE_SCALE_FACTOR = "true";
-    # ELECTRON_OZONE_PLATFORM_HINT = "auto";
-  };
-
   services.openssh.enable = true;
 
   nix = {

@@ -1,6 +1,5 @@
 xwayland disable
 
-
 input "type:keyboard" {
 	xkb_options caps:ctrl_modifier
 }
@@ -36,7 +35,6 @@ set $wob wob --config /etc/sway/wob/wob.ini
 
 exec dms run
 exec wl-paste --watch cliphist store
-
 exec swayidle -w \
         timeout 240 'swaylock -f' \
         timeout 300 'swaymsg "output * power off"' \
