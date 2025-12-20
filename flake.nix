@@ -118,9 +118,10 @@
             ]
             [
               ./home/hyprland.nix
-              ./home/dms.nix
               ./home/mango.nix
               ./home/sway.nix
+              # ./home/dms.nix
+              ./home/hyprpanel.nix
             ];
       };
     };
