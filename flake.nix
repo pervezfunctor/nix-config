@@ -4,11 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
-    catppuccin = {
-      url = "github:catppuccin/nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -43,62 +38,30 @@
     }@inputs:
     let
       system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
       vars = import ./vars.nix;
+      mango = import ./mango.nix { inherit inputs pkgs; };
 
       mkOS =
         osModules: homeImports:
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = {
-            inherit inputs;
-            inherit vars;
+            inherit inputs vars homeImports;
           };
 
           modules = [
             ./configuration.nix
+            ./core.nix
             ./dev.nix
             ./apps.nix
             ./virt.nix
 
-            inputs.mango.nixosModules.mango
-
             {
-              environment.sessionVariables = {
-                XCURSOR_SIZE = "32";
-                XCURSOR_THEME = "Adwaita";
-              };
-
-              services.gnome.gnome-keyring.enable = true;
-              security.polkit.enable = true;
-              services.dbus.enable = true;
-
-              programs.niri.enable = true;
-              programs.mango.enable = true;
               programs.sway.enable = true;
             }
-            inputs.catppuccin.nixosModules.catppuccin
             home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "backup";
-                extraSpecialArgs = {
-                  inherit vars;
-                };
-                users.${vars.username} = {
-                  imports = [
-                    ./home.nix
-                    inputs.catppuccin.homeModules.catppuccin
-                    inputs.noctalia.homeModules.default
-                    inputs.caelestia.homeManagerModules.default
-                    inputs.dms.homeModules.dankMaterialShell.default
-                    inputs.mango.hmModules.mango
-                  ]
-                  ++ homeImports;
-                };
-              };
-            }
+            ./homeModule.nix
           ]
           ++ osModules;
         };
@@ -106,33 +69,37 @@
     in
     {
       nixosConfigurations = {
-        nixos = mkOS [ ] [ ];
-
-        niri = mkOS [ ./niri.nix ] [ ./home/noctalia.nix ];
-
-        hyprland = mkOS [ ./hyprland.nix ] [ ./home/dms.nix ];
+        sway =
+          let
+            sway = import ./sway.nix;
+          in
+          mkOS [ sway.nixosModule ] [ sway.homeModule ./home/dms.nix ];
 
         mango =
           mkOS
-            [ ]
             [
-              ./home/mango.nix
-              ./home/dms.nix
-            ];
-
-        all =
-          mkOS
-            [
-              ./hyprland.nix
-              ./niri.nix
+              inputs.mango.nixosModules.mango
+              mango.nixosModule
             ]
-            [
-              ./home/hyprland.nix
-              ./home/mango.nix
-              ./home/sway.nix
-              # ./home/dms.nix
-              ./home/hyprpanel.nix
-            ];
+            [ mango.homeModule ./home/dms.nix ];
+
+        gnome =
+          let
+            gnome = import ./gnome.nix;
+          in
+          mkOS [ gnome.nixosModule ] [ gnome.homeModule ];
+
+        niri =
+          let
+            niri = import ./niri.nix;
+          in
+          mkOS [ niri.nixosModule ] [ niri.homeModule ./home/dms.nix ];
+
+        hyprland =
+          let
+            hyprland = import ./hyprland.nix;
+          in
+          mkOS [ hyprland.nixosModule ] [ hyprland.homeModule ./home/hyprland.nix ./home/hyprpanel.nix ];
       };
     };
 }

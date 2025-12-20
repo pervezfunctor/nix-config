@@ -1,5 +1,9 @@
 { ... }:
 {
+  modules = [
+    inputs.caelestia.homeManagerModules.default
+  ];
+
   programs.caelestia = {
     enable = true;
     systemd = {

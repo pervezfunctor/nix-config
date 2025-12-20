@@ -1,28 +1,23 @@
 { pkgs, ... }:
 {
-  programs.hyprland = {
-    enable = true;
-    withUWSM = true;
-    xwayland.enable = false;
+  nixosModule = {
+    programs.hyprland = {
+      enable = true;
+      withUWSM = true;
+      xwayland.enable = false;
+    };
+
+    environment.systemPackages = with pkgs; [
+      mako
+      hyprcursor
+      hypridle
+      hyprpaper
+    ];
   };
 
-  environment.systemPackages = with pkgs; [
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-cjk-serif
-    noto-fonts-color-emoji
-    font-awesome
-    dunst
-    hyprcursor
-    hypridle
-    hyprlock
-    hyprpaper
-    kitty
-    networkmanagerapplet
-    rofi
-    swaynotificationcenter
-    waybar
-    wl-clipboard
-    wlogout
-  ];
+  homeModule = {
+    home.file = {
+      ".config/hypr/hyprland.conf".source = ./conf/hyprland.conf;
+    };
+  };
 }

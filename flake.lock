@@ -46,26 +46,6 @@
         "type": "github"
       }
     },
-    "catppuccin": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1765990358,
-        "narHash": "sha256-l8x0gU8mnYaGMl+gWrsSHKBJlZWD8KXJfHTkRlFiPI0=",
-        "owner": "catppuccin",
-        "repo": "nix",
-        "rev": "de1b60ca45a578f59f7d84c8d338b346017b2161",
-        "type": "github"
-      },
-      "original": {
-        "owner": "catppuccin",
-        "repo": "nix",
-        "type": "github"
-      }
-    },
     "dgop": {
       "inputs": {
         "nixpkgs": [
@@ -158,11 +138,11 @@
         "scenefx": "scenefx"
       },
       "locked": {
-        "lastModified": 1766156899,
-        "narHash": "sha256-//94XRpdJYmlvUOvtnt4f6Dz6axfC9/6EZf4hlz1SJk=",
+        "lastModified": 1766201993,
+        "narHash": "sha256-vE9q/TT7zsNVhh9+5TBt2/AnZZ8b2lr9MIekOVnLodE=",
         "owner": "DreamMaoMao",
         "repo": "mango",
-        "rev": "df0e18481b0cdf9b216186c26e00de126550474b",
+        "rev": "471c71f65c3c15ebe633edf4757361649757f990",
         "type": "github"
       },
       "original": {
@@ -209,11 +189,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1766183644,
-        "narHash": "sha256-cCuqQAOjItR15tYjftSL1n8StkIPrzxZroOuCL4LRw4=",
+        "lastModified": 1766202991,
+        "narHash": "sha256-i0bSny2EeEdWjErFUXbFfoJOZMJLMsxEYMyw/f5oZu0=",
         "owner": "noctalia-dev",
         "repo": "noctalia-shell",
-        "rev": "6b407f0b9b2b58f6b8290899a53484e5cae9fea6",
+        "rev": "c8b76c7b90c1a9efa8c8c5a5c3229ca86b855830",
         "type": "github"
       },
       "original": {
@@ -268,7 +248,6 @@
     "root": {
       "inputs": {
         "caelestia": "caelestia",
-        "catppuccin": "catppuccin",
         "dms": "dms",
         "home-manager": "home-manager",
         "mango": "mango",
