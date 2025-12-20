@@ -56,6 +56,8 @@
 
           modules = [
             ./configuration.nix
+            ./dev.nix
+            ./apps.nix
             ./virt.nix
 
             inputs.mango.nixosModules.mango
@@ -109,6 +111,14 @@
         niri = mkOS [ ./niri.nix ] [ ./home/noctalia.nix ];
 
         hyprland = mkOS [ ./hyprland.nix ] [ ./home/dms.nix ];
+
+        mango =
+          mkOS
+            [ ]
+            [
+              ./home/mango.nix
+              ./home/dms.nix
+            ];
 
         all =
           mkOS
