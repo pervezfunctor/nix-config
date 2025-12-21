@@ -4,7 +4,6 @@
     programs.mango.enable = true;
 
     environment.systemPackages = with pkgs; [
-      rofi
       hypridle
     ];
   };

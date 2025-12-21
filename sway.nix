@@ -21,7 +21,7 @@
 
 #   config = rec {
 #     modifier = "Mod4";
-#     terminal = "kitty";
+#     terminal = "ghostty";
 #     startup = [
 #       # Launch Firefox on start
 #       { command = "firefox"; }

@@ -21,19 +21,17 @@ set $right l
 
 set $term ghostty
 
-set $rofi_cmd rofi -show drun
-set $menu $rofi_cmd
+set $menu noctalia-shell ipc call launcher toggle
 
 # set $screenlock 'swaylock --config ~/.ilm/suseway/dot-config/swaylock.conf'
-set $screenlock 'dms ipc call lock lock'
-set $menu_window $rofi_cmd -show window
+set $screenlock noctalia-shell ipc call sessionMenu lock
+set $menu_window rofi -show window
 set $wob wob --config /etc/sway/wob/wob.ini
 
 # exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 # exec /usr/libexec/lxqt-policykit-agent
 # exec /usr/libexec/polkit-gnome-authentication-agent-1
 
-exec dms run
 exec wl-paste --watch cliphist store
 exec swayidle -w \
         timeout 240 'swaylock -f' \

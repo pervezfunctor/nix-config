@@ -20,7 +20,6 @@
     gcc
     gh
     gnumake
-    ghostty
     git
     delta
     htop

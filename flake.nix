@@ -70,7 +70,7 @@
       nixosConfigurations = {
         sway =
           let
-            sway = import ./sway.nix;
+            sway = import ./sway.nix { inherit inputs pkgs; };
           in
           mkOS [ sway.nixosModule ] [ sway.homeModule ./home/noctalia.nix ];
 
@@ -82,21 +82,38 @@
             ]
             [ mango.homeModule ./home/dms.nix ];
 
+        mangosway =
+          let
+            sway = import ./sway.nix { inherit inputs pkgs; };
+          in
+          mkOS
+            [
+              inputs.mango.nixosModules.mango
+              mango.nixosModule
+              sway.nixosModule
+            ]
+            [
+              mango.homeModule
+              sway.homeModule
+              ./home/dms.nix
+              ./home/noctalia.nix
+            ];
+
         gnome =
           let
-            gnome = import ./gnome.nix;
+            gnome = import ./gnome.nix { inherit inputs pkgs; };
           in
           mkOS [ gnome.nixosModule ] [ gnome.homeModule ];
 
         niri =
           let
-            niri = import ./niri.nix;
+            niri = import ./niri.nix { inherit inputs pkgs; };
           in
           mkOS [ niri.nixosModule ] [ niri.homeModule ./home/dms.nix ];
 
         hyprland =
           let
-            hyprland = import ./hyprland.nix;
+            hyprland = import ./hyprland.nix { inherit inputs pkgs; };
           in
           mkOS [ hyprland.nixosModule ] [ hyprland.homeModule ./home/hyprland.nix ./home/hyprpanel.nix ];
       };
