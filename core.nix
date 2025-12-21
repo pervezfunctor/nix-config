@@ -17,17 +17,23 @@
   services.dbus.enable = true;
 
   environment.systemPackages = with pkgs; [
+    adw-gtk3
+    adwaita-fonts
+    adwaita-icon-theme
     cliphist
-    font-awesome
     fira-code
     fira-sans
+    font-awesome
     nerd-fonts.jetbrains-mono
+    nerd-fonts.monaspace
     noto-fonts
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
     noto-fonts-color-emoji
     papirus-icon-theme
+    pywal
     pywalfox-native
+    nautilus
     wl-clipboard
   ];
 }

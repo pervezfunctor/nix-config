@@ -43,6 +43,7 @@
     tealdeer
     tmux
     trash-cli
+    tree
     unzip
     vscode
     wget
