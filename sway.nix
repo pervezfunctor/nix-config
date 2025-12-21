@@ -10,7 +10,7 @@
 
   homeModule = {
     home.file = {
-      ".config/sway/config".source = ./conf/config;
+      ".config/sway/config".source = ./config/sway/config;
     };
   };
 }

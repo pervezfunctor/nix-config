@@ -4,7 +4,7 @@
     programs.mango.enable = true;
 
     environment.systemPackages = with pkgs; [
-      hypridle
+      swayidle
     ];
   };
 
@@ -25,7 +25,7 @@
     };
 
     home.file = {
-      ".config/mango/config.conf".source = ./conf/config.conf;
+      ".config/mango/config.conf".source = ./config/mango/config.conf;
     };
   };
 }

@@ -32,6 +32,8 @@ set $wob wob --config /etc/sway/wob/wob.ini
 # exec /usr/libexec/lxqt-policykit-agent
 # exec /usr/libexec/polkit-gnome-authentication-agent-1
 
+exec gnome-keyring
+exec noctalia-shell
 exec wl-paste --watch cliphist store
 exec swayidle -w \
         timeout 240 'swaylock -f' \
