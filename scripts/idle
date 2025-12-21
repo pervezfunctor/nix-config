@@ -1,0 +1,30 @@
+#! /usr/bin/env bash
+
+has_cmd() {
+  commad -v "$1" >/dev/null
+}
+
+lockscreen() {
+  if has_cmd dms; then
+    dms ipc call lock lock
+  elif has_cmd noctalia-shell; then
+    noctalia-shell ipc call launcher toggle
+  elif has_cmd swaylock; then
+    swaylock -f
+  fi
+}
+
+if command -v systemd-detect-virt >/dev/null; then
+  if systemd-detect-virt --quiet; then
+    return 0
+  fi
+fi
+
+swayidle -w \
+  timeout 240 lockscreen \
+  timeout 300 swaymsg "output * power off" \
+  resume swaymsg "output * power on" \
+  lock lockscreen \
+  unlock pkill -xu "$USER" -SIGUSR1 lockscreen \
+  before-sleep lockscreen \
+  timeout 600 systemctl suspend
