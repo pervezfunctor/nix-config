@@ -1,6 +1,6 @@
 { inputs, ... }:
 {
-  modules = [
+  imports = [
     inputs.caelestia.homeManagerModules.default
   ];
 

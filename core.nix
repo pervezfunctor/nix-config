@@ -66,10 +66,10 @@
     wlogout
     wlr-randr
     wlsunset
-    polkit
-    polkit_gnome
-    xdg-desktop-portal
-    xdg-desktop-portal-gtk
-    xdg-desktop-portal-wlr
+    # polkit
+    # polkit_gnome
+    # xdg-desktop-portal
+    # xdg-desktop-portal-gtk
+    # xdg-desktop-portal-wlr
   ];
 }
