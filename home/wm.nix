@@ -1,0 +1,45 @@
+{ pkgs, ... }:
+{
+  home.packages = with pkgs; [
+    blueman
+    bluez
+    brightnessctl
+    cliphist
+    fastfetch
+    ffmpegthumbnailer
+    flameshot
+    font-awesome
+    gnome-keyring
+    grim
+    gvfs
+    htop
+    imagemagick
+    imv
+    kitty
+    lm_sensors
+    mako
+    matugen
+    mpv
+    noto-fonts
+    noto-fonts-emoji
+    nwg-displays
+    nwg-look
+    pamixer
+    pavucontrol
+    pywal
+    pywalfox-native
+    rofi-wayland
+    slurp
+    smartmontools
+    swww
+    ttf-fira-code
+    ttf-jetbrains-mono
+    udiskie
+    udisks2
+    wl-clip-persist
+    wl-clipboard
+    wlogout
+    wlr-randr
+    wlsunset
+  ];
+}
