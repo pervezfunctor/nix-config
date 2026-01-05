@@ -51,7 +51,7 @@
           };
 
           modules = [
-            ./configuration.nix
+            ./hosts/bd795/configuration.nix
             ./core.nix
             ./dev.nix
             ./apps.nix
