@@ -53,13 +53,11 @@
           modules = [
             ./configuration.nix
             ./core.nix
-            ./core.nix
             ./dev.nix
             ./apps.nix
             ./virt.nix
 
             home-manager.nixosModules.home-manager
-            ./homeModule.nix
             ./homeModule.nix
           ]
           ++ osModules;
@@ -115,7 +113,27 @@
           let
             hyprland = import ./hyprland.nix { inherit inputs pkgs; };
           in
-          mkOS [ hyprland.nixosModule ] [ hyprland.homeModule ./home/hyprland.nix ./home/hyprpanel.nix ];
+          mkOS [ hyprland.nixosModule ] [ hyprland.homeModule ./home/hyprpanel.nix ];
       };
     };
+
+  # homeConfigurations = {
+  #   noctalia = home-manager.lib.homeConfiguration {
+  #     inherit system;
+  #     modules = [
+  #       ./home/noctalia.nix
+  #       ./home/common.nix
+  #     ];
+  #     specialArgs = { inherit inputs vars; };
+  #   };
+
+  #   dms = home-manager.lib.homeConfiguration {
+  #     inherit system;
+  #     modules = [
+  #       ./home/dms.nix
+  #       ./home/common.nix
+  #     ];
+  #     specialArgs = { inherit inputs vars; };
+  #   };
+  # };
 }

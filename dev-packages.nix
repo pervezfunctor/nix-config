@@ -1,0 +1,50 @@
+{ pkgs, ... }:
+
+with pkgs;
+[
+  act
+  antigravity
+  bat
+  bitwarden-cli
+  curl
+  delta
+  devbox
+  devenv
+  distrobox
+  eza
+  file
+  fd
+  fzf
+  gcc
+  gh
+  gnumake
+  git
+  delta
+  htop
+  jq
+  just
+  neovim
+  nerd-fonts.jetbrains-mono
+  newt
+  nixd
+  nixfmt-rfc-style
+  openssl
+  passt
+  p7zip
+  procs
+  ptyxis
+  ripgrep
+  runme
+  shellcheck
+  shfmt
+  stow
+  tealdeer
+  tmux
+  trash-cli
+  tree
+  unzip
+  vscode
+  wget
+  yq
+  zoxide
+]

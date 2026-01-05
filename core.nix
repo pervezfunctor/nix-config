@@ -5,7 +5,7 @@
   environment.sessionVariables = {
     XCURSOR_SIZE = "32";
     XCURSOR_THEME = "Bibata-Modern-Ice";
-    XDG_CURRENT_DESKTOP = "niri";
+    XDG_CURRENT_DESKTOP = "Hyprland";
     QT_QPA_PLATFORM = "wayland";
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
     QT_QPA_PLATFORMTHEME = "gtk3";

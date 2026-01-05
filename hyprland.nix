@@ -6,7 +6,6 @@
       withUWSM = true;
       xwayland.enable = false;
     };
-    programs.hypridle.enable = true;
 
     environment.systemPackages = with pkgs; [
       mako
