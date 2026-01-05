@@ -8,6 +8,10 @@
     ];
   };
 
+  environment.sessionVariables = {
+    XDG_CURRENT_DESKTOP = "mango";
+  };
+
   homeModule = {
     imports = [
       inputs.mango.hmModules.mango

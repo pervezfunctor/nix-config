@@ -115,25 +115,25 @@
           in
           mkOS [ hyprland.nixosModule ] [ hyprland.homeModule ./home/hyprpanel.nix ];
       };
+
+      homeConfigurations = {
+        noctalia = home-manager.lib.homeConfiguration {
+          inherit system;
+          modules = [
+            ./home/wm.nix
+            ./home/noctalia.nix
+          ];
+          specialArgs = { inherit inputs vars; };
+        };
+
+        dms = home-manager.lib.homeConfiguration {
+          inherit system;
+          modules = [
+            ./home/wm.nix
+            ./home/dms.nix
+          ];
+          specialArgs = { inherit inputs vars; };
+        };
+      };
     };
-
-  # homeConfigurations = {
-  #   noctalia = home-manager.lib.homeConfiguration {
-  #     inherit system;
-  #     modules = [
-  #       ./home/noctalia.nix
-  #       ./home/common.nix
-  #     ];
-  #     specialArgs = { inherit inputs vars; };
-  #   };
-
-  #   dms = home-manager.lib.homeConfiguration {
-  #     inherit system;
-  #     modules = [
-  #       ./home/dms.nix
-  #       ./home/common.nix
-  #     ];
-  #     specialArgs = { inherit inputs vars; };
-  #   };
-  # };
 }

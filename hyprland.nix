@@ -7,6 +7,9 @@
       xwayland.enable = false;
     };
 
+    environment.sessionVariables = {
+      XDG_CURRENT_DESKTOP = "Hyprland";
+    };
     environment.systemPackages = with pkgs; [
       mako
       hyprcursor
@@ -20,6 +23,7 @@
       hyprpwcenter
       hyprpaper
       hypridle
+      rofi
     ];
   };
 

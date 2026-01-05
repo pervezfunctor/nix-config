@@ -8,6 +8,10 @@
     ];
   };
 
+  environment.sessionVariables = {
+    XDG_CURRENT_DESKTOP = "sway";
+  };
+
   homeModule = {
     home.file = {
       ".config/sway/config".source = ./config/sway/config;
