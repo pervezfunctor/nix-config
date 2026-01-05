@@ -1,4 +1,4 @@
-{ ... }:
+{ inputs, ... }:
 {
   modules = [
     inputs.catppuccin.nixosModules.catppuccin
