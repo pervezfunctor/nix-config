@@ -14,9 +14,9 @@
     # enableAudioWavelength = true; # Audio visualizer (cava)
     # enableCalendarEvents = true; # Calendar integration (khal)
 
-    # systemd = {
-    #   enable = true; # Systemd service for auto-start
-    #   restartIfChanged = true; # Auto-restart dms.service when dankMaterialShell changes
-    # };
+    systemd = {
+      enable = true;
+      restartIfChanged = true;
+    };
   };
 }
