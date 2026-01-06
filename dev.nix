@@ -1,5 +1,16 @@
 { pkgs, ... }:
 
+let
+  shellInit = ''
+    if [[ -d "$HOME/.ilm" ]]; then
+      source "$HOME/.ilm/share/shellrc"
+    fi
+  '';
+  shellAliases = {
+    nrs = "update-os";
+  };
+in
+
 {
   nixpkgs.config.allowUnfree = true;
 
@@ -29,16 +40,12 @@
       autosuggestions.enable = true;
       syntaxHighlighting.enable = true;
       enableCompletion = true;
+      inherit shellAliases shellInit;
+    };
 
-      shellAliases = {
-        update-os = "sudo nixos-rebuild switch --flake ~/nix-config\#";
-      };
-
-      shellInit = ''
-        if [[ -d "$HOME/.ilm" ]]; then
-          source "$HOME/.ilm/share/shellrc"
-        fi
-      '';
+    bash = {
+      enable = true;
+      inherit shellAliases shellInit;
     };
 
     starship = {

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, vars, ... }:
 {
   hardware.enableRedistributableFirmware = true;
 
@@ -14,6 +14,8 @@
   services.gnome.gnome-keyring.enable = true;
   security.polkit.enable = true;
   services.dbus.enable = true;
+
+  users.users.${vars.username}.shell = pkgs.zsh;
 
   environment.systemPackages = with pkgs; [
     adw-gtk3
