@@ -113,7 +113,7 @@
           let
             hyprland = import ./hyprland.nix { inherit inputs pkgs; };
           in
-          mkOS [ hyprland.nixosModule ] [ hyprland.homeModule ./home/hyprpanel.nix ];
+          mkOS [ hyprland.nixosModule ] [ hyprland.homeModule ./home/dms.nix ];
       };
 
       homeConfigurations = {

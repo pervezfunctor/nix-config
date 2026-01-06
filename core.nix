@@ -5,15 +5,19 @@
   environment.sessionVariables = {
     XCURSOR_SIZE = "32";
     XCURSOR_THEME = "Bibata-Modern-Ice";
-    QT_QPA_PLATFORM = "wayland";
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
-    QT_QPA_PLATFORMTHEME = "gtk3";
-    QT_QPA_PLATFORMTHEME_QT6 = "gtk3";
+    QT_QPA_PLATFORM = "wayland";
+    # QT_QPA_PLATFORMTHEME = "gtk3";
+    # QT_QPA_PLATFORMTHEME_QT6 = "gtk3";
   };
 
   services.gnome.gnome-keyring.enable = true;
   security.polkit.enable = true;
   services.dbus.enable = true;
+  xdg.portal.enable = true;
+  services.udisks2.enable = true;
+
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
 
   users.users.${vars.username}.shell = pkgs.zsh;
 
