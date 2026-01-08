@@ -36,6 +36,7 @@
     fira-sans
     flameshot
     font-awesome
+    ghostty
     gnome-keyring
     grim
     gvfs
