@@ -15,9 +15,9 @@
   security.polkit.enable = true;
   services.dbus.enable = true;
   xdg.portal.enable = true;
-  services.udisks2.enable = true;
+  # services.udisks2.enable = true;
 
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+  # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
 
   users.users.${vars.username}.shell = pkgs.zsh;
 

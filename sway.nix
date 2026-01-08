@@ -3,7 +3,7 @@
   nixosModule = {
     programs.sway.enable = true;
     environment.systemPackages = with pkgs; [
-      swaylock
+      swaylock-effects
       swayidle
     ];
   };

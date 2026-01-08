@@ -45,6 +45,7 @@ with pkgs;
   unzip
   vscode
   wget
+  yazi
   yq
   zoxide
 ]

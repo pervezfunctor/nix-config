@@ -24,7 +24,7 @@ set $term ghostty
 set $menu noctalia-shell ipc call launcher toggle
 
 # set $screenlock 'swaylock --config ~/.ilm/suseway/dot-config/swaylock.conf'
-set $screenlock noctalia-shell ipc call sessionMenu lock
+# set $screenlock noctalia-shell ipc call sessionMenu lock
 set $menu_window rofi -show window
 set $wob wob --config /etc/sway/wob/wob.ini
 
@@ -32,19 +32,44 @@ set $wob wob --config /etc/sway/wob/wob.ini
 # exec /usr/libexec/lxqt-policykit-agent
 # exec /usr/libexec/polkit-gnome-authentication-agent-1
 
-exec gnome-keyring
-exec noctalia-shell
+# exec gnome-keyring
+# exec noctalia-shell
+
 exec wl-paste --watch cliphist store
+
+set $screenlock swaylock \
+  --screenshots \
+  --effect-blur 7x5 \
+  --clock \
+  --indicator \
+  --indicator-radius 120 \
+  --indicator-thickness 10 \
+  --ring-color 5e81ac \
+  --ring-ver-color a3be8c \
+  --ring-wrong-color bf616a \
+  --ring-clear-color ebcb8b \
+  --inside-color 2e344080 \
+  --inside-ver-color 2e344080 \
+  --inside-wrong-color 2e344080 \
+  --inside-clear-color 2e344080 \
+  --line-color 00000000 \
+  --separator-color 00000000 \
+  --text-color eceff4 \
+  --text-ver-color eceff4 \
+  --text-wrong-color eceff4 \
+  --text-clear-color eceff4 \
+  --fade-in 0.3
+
 exec swayidle -w \
-        timeout 240 'swaylock -f' \
-        timeout 300 'swaymsg "output * power off"' \
-        resume 'swaymsg "output * power on"'  \
-        timeout 180 'pgrep -xu "$USER" swaylock >/dev/null && swaymsg "output * power off"' \
-        resume 'pgrep -xu "$USER" swaylock >/dev/null && swaymsg "output * power on"'  \
-        before-sleep 'swaylock -f' \
-        lock 'swaylock -f' \
-        unlock 'pkill -xu "$USER" -SIGUSR1 swaylock' \
-        timeout 600 'systemctl suspend'
+  timeout 240 '$screenlock -f' \
+  timeout 300 'swaymsg "output * power off"' \
+  resume 'swaymsg "output * power on"' \
+  timeout 180 'pgrep -xu "$USER" swaylock >/dev/null && swaymsg "output * power off"' \
+  resume 'pgrep -xu "$USER" swaylock >/dev/null && swaymsg "output * power on"' \
+  before-sleep '$screenlock -f' \
+  lock '$screenlock -f' \
+  unlock 'pkill -xu "$USER" -SIGUSR1 swaylock'
+  # timeout 600 'systemctl suspend'
 
 exec_always {
     systemctl --user import-environment
@@ -250,11 +275,11 @@ for_window [app_id="lxqt-policykit-agent"] {
 for_window [app_id="org.mozilla.firefox"] opacity 0.98
 for_window [app_id="code"] opacity 0.98
 
-# DMS Keybindings
-bindsym $mod+shift+return exec dms ipc call spotlight toggle
-bindsym $mod+shift+v exec dms ipc call clipboard toggle
-bindsym $mod+shift+m exec dms ipc call processlist focusOrToggle
-bindsym $mod+comma exec dms ipc call settings focusOrToggle
+# # DMS Keybindings
+# bindsym $mod+shift+return exec dms ipc call spotlight toggle
+# bindsym $mod+shift+v exec dms ipc call clipboard toggle
+# bindsym $mod+shift+m exec dms ipc call processlist focusOrToggle
+# bindsym $mod+comma exec dms ipc call settings focusOrToggle
 
 # # Audio controls
 # bindsym XF86AudioRaiseVolume exec dms ipc call audio increment 3
@@ -263,3 +288,20 @@ bindsym $mod+comma exec dms ipc call settings focusOrToggle
 # # Brightness controls
 # bindsym XF86MonBrightnessUp exec dms ipc call brightness increment 5
 # bindsym XF86MonBrightnessDown exec dms ipc call brightness decrement 5
+
+
+# # Audio controls
+# bindel = , XF86AudioRaiseVolume, exec, noctalia-shell ipc call volume increase
+# bindel = , XF86AudioLowerVolume, exec, noctalia-shell ipc call volume decrease
+# bindl = , XF86AudioMute, exec, noctalia-shell ipc call volume muteOutput
+
+# # Brightness controls
+# bindel = , XF86MonBrightnessUp, exec, noctalia-shell ipc call brightness increase
+# bindel = , XF86MonBrightnessDown, exec, noctalia-shell ipc call brightness decrease
+
+bindsym $mod+alt+shift+l exec noctalia-shell ipc call lockScreen lock
+bindsym $mod+space exec noctalia-shell ipc call launcher toggle
+# bindsym $mod+V exec noctalia-shell ipc call launcher clipboard
+# bindsym $mod+C exec noctalia-shell ipc call launcher calculator
+# bind $mod+S exec noctalia-shell ipc call controlCenter toggle
+# bind $mod+comma exec noctalia-shell ipc call settings toggle

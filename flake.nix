@@ -82,11 +82,13 @@
         swayModules.homeModule
         niriModules.homeModule
         hyprlandModules.homeModule
-        ./home/dms.nix
+        ./home/noctalia.nix
       ];
     in
     {
       nixosConfigurations = {
+        default = mkOS [ ] [ ];
+
         sway = mkOS [ swayModules.nixosModule ] [ swayModules.homeModule ./home/noctalia.nix ];
 
         mango =
