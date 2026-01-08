@@ -7,12 +7,9 @@
   programs.dankMaterialShell = {
     enable = true;
 
-    enableSystemMonitoring = true; # System monitoring widgets (dgop)
-    enableClipboard = true; # Clipboard history manager
-    enableDynamicTheming = true; # Wallpaper-based theming (matugen)
-    # enableVPN = true; # VPN management widget
-    # enableAudioWavelength = true; # Audio visualizer (cava)
-    # enableCalendarEvents = true; # Calendar integration (khal)
+    enableSystemMonitoring = true;
+    enableClipboard = true;
+    enableDynamicTheming = true;
 
     systemd = {
       enable = true;

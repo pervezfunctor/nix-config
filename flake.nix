@@ -82,6 +82,7 @@
         swayModules.homeModule
         niriModules.homeModule
         hyprlandModules.homeModule
+        ./home/dms.nix
       ];
     in
     {
