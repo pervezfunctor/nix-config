@@ -82,18 +82,18 @@
             ]
             [ mango.homeModule ./home/dms.nix ];
 
-        mangosway =
+        swayniri =
           let
             sway = import ./sway.nix { inherit inputs pkgs; };
+            niri = import ./niri.nix { inherit inputs pkgs; };
           in
           mkOS
             [
-              inputs.mango.nixosModules.mango
-              mango.nixosModule
+              niri.nixosModule
               sway.nixosModule
             ]
             [
-              mango.homeModule
+              niri.homeModule
               sway.homeModule
               ./home/dms.nix
               ./home/noctalia.nix
