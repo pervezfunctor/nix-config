@@ -7,8 +7,7 @@
   programs.caelestia = {
     enable = true;
     systemd = {
-      enable = true; # if you prefer starting from your compositor
-      target = "graphical-session.target";
+      enable = false;
       environment = [ ];
     };
 
@@ -20,9 +19,11 @@
     };
 
     cli = {
-      enable = false; # Also add caelestia-cli to path
+      enable = false;
       settings = {
-        theme.enableGtk = false;
+        theme.enableGtk = true;
+        theme.enableIcons = true;
+        theme.enableCursor = true;
       };
     };
   };

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, vars, ... }:
 {
   # Enable greetd as a display manager for Hyprland
   services.greetd = {
@@ -11,8 +11,11 @@
     };
   };
 
-  # Disable getty autologin since we're using greetd
-  services.getty.autologinUser = null;
+  services.getty = {
+    autologinUser = vars.username;
+    autologinOnce = true;
+  };
 
-  environment.systemPackages = with pkgs; [ tuigreet ];
+  programs.regreet.enable = true;
+  # environment.systemPackages = with pkgs; [ tuigreet ];
 }

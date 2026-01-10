@@ -1,5 +1,6 @@
 { pkgs, vars, ... }:
 {
+  # hardware.graphics.enable = true;
   hardware.enableRedistributableFirmware = true;
 
   environment.sessionVariables = {
@@ -11,15 +12,61 @@
     # QT_QPA_PLATFORMTHEME_QT6 = "gtk3";
   };
 
-  services.gnome.gnome-keyring.enable = true;
-  security.polkit.enable = true;
   services.dbus.enable = true;
-  xdg.portal.enable = true;
-  # services.udisks2.enable = true;
+  security.polkit.enable = true;
+  services.gnome.gnome-keyring.enable = true;
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+  services.tumbler.enable = true;
+  programs.thunar.enable = true;
+  programs.xfconf.enable = true;
 
-  # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+  };
+
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    pulse.enable = true;
+  };
 
   users.users.${vars.username}.shell = pkgs.zsh;
+
+  systemd.user.services.kanshi = {
+    description = "kanshi daemon";
+    environment = {
+      WAYLAND_DISPLAY = "wayland-1";
+      DISPLAY = ":0";
+    };
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = ''${pkgs.kanshi}/bin/kanshi -c kanshi_config_file'';
+    };
+  };
+
+  fonts = {
+    packages = with pkgs; [
+      fira-code
+      font-awesome
+      inter
+      inter-nerdfont
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.monaspace
+      noto-fonts
+      noto-fonts-color-emoji
+    ];
+    fontconfig.defaultFonts = {
+      serif = [ "Noto Serif" ];
+      sansSerif = [
+        "Inter"
+        "Noto Sans"
+      ];
+    };
+  };
+
+  users.extraGroups.video.members = [ vars.username ];
 
   environment.systemPackages = with pkgs; [
     adw-gtk3
@@ -32,34 +79,22 @@
     cliphist
     fastfetch
     ffmpegthumbnailer
-    fira-code
-    fira-sans
     flameshot
-    font-awesome
-    ghostty
-    gnome-keyring
+    gnome-themes-extra
     grim
-    gvfs
-    htop
     imagemagick
     imv
     kitty
+    libnotify
     lm_sensors
-    mako
     matugen
     mpv
-    nautilus
-    nerd-fonts.jetbrains-mono
-    nerd-fonts.monaspace
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-cjk-serif
-    noto-fonts-color-emoji
     nwg-displays
     nwg-look
     pamixer
     papirus-icon-theme
     pavucontrol
+    pulseaudio
     pywal
     pywalfox-native
     rofi
@@ -67,16 +102,11 @@
     smartmontools
     swww
     udiskie
-    udisks2
+    waypaper
     wl-clip-persist
     wl-clipboard
     wlogout
     wlr-randr
     wlsunset
-    # polkit
-    # polkit_gnome
-    # xdg-desktop-portal
-    # xdg-desktop-portal-gtk
-    # xdg-desktop-portal-wlr
   ];
 }

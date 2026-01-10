@@ -19,7 +19,7 @@ set $down j
 set $up k
 set $right l
 
-set $term ghostty
+set $term kitty
 
 set $menu noctalia-shell ipc call launcher toggle
 
@@ -27,15 +27,6 @@ set $menu noctalia-shell ipc call launcher toggle
 # set $screenlock noctalia-shell ipc call sessionMenu lock
 set $menu_window rofi -show window
 set $wob wob --config /etc/sway/wob/wob.ini
-
-# exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-# exec /usr/libexec/lxqt-policykit-agent
-# exec /usr/libexec/polkit-gnome-authentication-agent-1
-
-# exec gnome-keyring
-# exec noctalia-shell
-
-exec wl-paste --watch cliphist store
 
 set $screenlock swaylock \
   --screenshots \
@@ -69,7 +60,7 @@ exec swayidle -w \
   before-sleep '$screenlock -f' \
   lock '$screenlock -f' \
   unlock 'pkill -xu "$USER" -SIGUSR1 swaylock'
-  # timeout 600 'systemctl suspend'
+  timeout 600 'systemctl suspend'
 
 exec_always {
     systemctl --user import-environment
@@ -305,3 +296,16 @@ bindsym $mod+space exec noctalia-shell ipc call launcher toggle
 # bindsym $mod+C exec noctalia-shell ipc call launcher calculator
 # bind $mod+S exec noctalia-shell ipc call controlCenter toggle
 # bind $mod+comma exec noctalia-shell ipc call settings toggle
+
+include /etc/sway/config.d/*
+exec wl-paste --watch cliphist store
+exec noctalia-shell
+
+# exec dms run
+
+# exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+# exec /usr/libexec/lxqt-policykit-agent
+# exec /usr/libexec/polkit-gnome-authentication-agent-1
+
+# exec gnome-keyring
+# exec sleep 5; systemctl --user start kanshi.service

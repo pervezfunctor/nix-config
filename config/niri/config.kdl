@@ -1,8 +1,3 @@
-spawn-at-startup "noctalia-shell"
-spawn-at-startup "gnome-keyring"
-spawn-at-startup "wl-paste --watch cliphist store"
-spawn-sh-at-startup "../scripts/idle"
-
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
@@ -40,61 +35,17 @@ input {
 
 layout {
     gaps 8
-    center-focused-column "on-overflow"
+    center-focused-column "always"
+    always-center-single-column
+    empty-workspace-above-first
 
-     preset-column-widths {
-         proportion 0.33333
-         proportion 0.5
-         proportion 0.66667
-     }
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
 
-     default-column-width { proportion 0.5; }
-     // default-column-width {}
-
-//     focus-ring {
-//         off
-//         width 2
-//
-//         // active-color "#7fc8ff"
-//         // inactive-color "#505050"
-//
-//         // active-gradient from="#80c8ff" to="#c7ff7f" angle=45
-//         // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
-//     }
-//
-//
-//     border {
-//         on
-//
-//         width 2
-//         active-color "#ffc87f"
-//         inactive-color "#505050"
-//         urgent-color "#9b0000"
-//
-//         // Gradients can use a few different interpolation color spaces.
-//         // For example, this is a pastel rainbow gradient via in="oklch longer hue".
-//         //
-//         // active-gradient from="#e5989b" to="#ffb4a2" angle=45 relative-to="workspace-view" in="oklch longer hue"
-//
-//         // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
-//     }
-//
-//     shadow {
-//         on
-//         // draw-behind-window true
-//
-//         softness 30
-//         spread 5
-//         offset x=0 y=5
-//         color "#0007"
-//     }
-//
-//     struts {
-//         // left 64
-//         // right 64
-//         // top 64
-//         // bottom 64
-//     }
+    default-column-width { proportion 0.5; }
 }
 
 // screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
@@ -138,14 +89,14 @@ window-rule {
 }
 
 window-rule {
-    geometry-corner-radius 12
+    geometry-corner-radius 20
     clip-to-geometry true
 }
 
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
-    Mod+Return hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty"; }
+    Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
     Mod+D hotkey-overlay-title="Run an Application: noctalia" { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen: hyprlock" { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "lock"; }
 
@@ -315,3 +266,23 @@ binds {
     XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
 }
 
+// Set the overview wallpaper on the backdrop.
+layer-rule {
+  match namespace="^noctalia-overview*"
+  place-within-backdrop true
+}
+
+debug {
+  // Allows notification actions and window activation from Noctalia.
+  honor-xdg-activation-with-invalid-serial
+}
+
+spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=niri
+spawn-at-startup "gnome-keyring"
+spawn-sh-at-startup "wl-paste --watch cliphist store"
+
+spawen-sh-at-startup "$HOME/nix-config/scripts/idle"
+
+spawn-sh-at-startup noctalia-shell
+# spawn-sh-at-startup dms run
+# spawn-at-startup "hypridle"

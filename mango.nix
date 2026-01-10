@@ -9,7 +9,8 @@
   };
 
   environment.sessionVariables = {
-    XDG_CURRENT_DESKTOP = "mango";
+    XDG_CURRENT_DESKTOP = "wlroots";
+    XDG_SESSION_TYPE = "wayland";
   };
 
   homeModule = {
@@ -29,7 +30,11 @@
     };
 
     home.file = {
-      ".config/mango/config.conf".source = ./config/mango/config.conf;
+      ".config/mango/config.conf" = {
+        source = ./config/mango/config.conf;
+        force = true;
+      };
+
     };
   };
 }

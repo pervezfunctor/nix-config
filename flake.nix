@@ -52,13 +52,11 @@
         osModules: homeImports:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = {
-            inherit inputs vars homeImports;
-          };
+          specialArgs = { inherit inputs vars homeImports; };
 
           modules = [
-            ./hosts/bd795/configuration.nix
             ./core.nix
+            ./hosts/bd795/configuration.nix
             ./dev.nix
             ./apps.nix
             ./virt.nix
@@ -69,7 +67,19 @@
           ++ osModules;
         };
 
-      wmOsModules = [
+      mkHome =
+        homeImports:
+        home-manager.lib.homeConfiguration {
+          inherit system;
+          modules = [
+            ./home/wm.nix
+            ./home/gtk.nix
+          ]
+          ++ homeImports;
+          specialArgs = { inherit inputs vars; };
+        };
+
+      allOSModules = [
         mango.nixosModules.mango
         mangoModules.nixosModule
         swayModules.nixosModule
@@ -77,20 +87,26 @@
         hyprlandModules.nixosModule
       ];
 
-      wmHomeModules = [
+      allHomeModules = [
         mangoModules.homeModule
         swayModules.homeModule
         niriModules.homeModule
         hyprlandModules.homeModule
+        gnomeModules.homeModule
+        ./home/caelestia.nix
+        ./home/dms.nix
         ./home/noctalia.nix
       ];
     in
     {
       nixosConfigurations = {
         default = mkOS [ ] [ ];
-
         sway = mkOS [ swayModules.nixosModule ] [ swayModules.homeModule ./home/noctalia.nix ];
-
+        gnome = mkOS [ gnomeModules.nixosModule ] [ gnomeModules.homeModule ];
+        niri = mkOS [ niriModules.nixosModule ] [ niriModules.homeModule ./home/noctalia.nix ];
+        hyprland = mkOS [ hyprlandModules.nixosModule ] [ hyprlandModules.homeModule ./home/caelestia.nix ];
+        all = mkOS allOSModules allHomeModules;
+        nohm = mkOS allOSModules [ ];
         mango =
           mkOS
             [
@@ -98,46 +114,12 @@
               mangoModules.nixosModule
             ]
             [ mangoModules.homeModule ./home/dms.nix ];
-
-        gnome = mkOS [ gnomeModules.nixosModule ] [ gnomeModules.homeModule ];
-
-        niri = mkOS [ niriModules.nixosModule ] [ niriModules.homeModule ./home/dms.nix ];
-
-        hyprland = mkOS [ hyprlandModules.nixosModule ] [ hyprlandModules.homeModule ./home/dms.nix ];
-
-        wm = mkOS wmOsModules wmHomeModules;
-
-        nohm = mkOS wmOsModules [ ];
-
       };
 
       homeConfigurations = {
-        noctalia = home-manager.lib.homeConfiguration {
-          inherit system;
-          modules = [
-            ./home/wm.nix
-            ./home/noctalia.nix
-          ];
-          specialArgs = { inherit inputs vars; };
-        };
-
-        dms = home-manager.lib.homeConfiguration {
-          inherit system;
-          modules = [
-            ./home/wm.nix
-            ./home/dms.nix
-          ];
-          specialArgs = { inherit inputs vars; };
-        };
-
-        caelestia = home-manager.lib.homeConfiguration {
-          inherit system;
-          modules = [
-            ./home/wm.nix
-            ./home/caelestia.nix
-          ];
-          specialArgs = { inherit inputs vars; };
-        };
+        noctalia = mkHome [ ./home/noctalia.nix ];
+        dms = mkHome [ ./home/dms.nix ];
+        caelestia = mkHome [ ./home/caelestia.nix ];
       };
     };
 }

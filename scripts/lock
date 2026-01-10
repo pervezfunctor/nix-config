@@ -1,0 +1,28 @@
+#! /usr/bin/env bash
+
+if ! command -v swaylock >/dev/null; then
+  exit 0
+fi
+
+swaylock \
+  --screenshots \
+  --effect-blur 7x5 \
+  --clock \
+  --indicator \
+  --indicator-radius 120 \
+  --indicator-thickness 10 \
+  --ring-color 5e81ac \
+  --ring-ver-color a3be8c \
+  --ring-wrong-color bf616a \
+  --ring-clear-color ebcb8b \
+  --inside-color 2e344080 \
+  --inside-ver-color 2e344080 \
+  --inside-wrong-color 2e344080 \
+  --inside-clear-color 2e344080 \
+  --line-color 00000000 \
+  --separator-color 00000000 \
+  --text-color eceff4 \
+  --text-ver-color eceff4 \
+  --text-wrong-color eceff4 \
+  --text-clear-color eceff4 \
+  --fade-in 0.3

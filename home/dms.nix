@@ -12,7 +12,7 @@
     enableDynamicTheming = true;
 
     systemd = {
-      enable = true;
+      enable = false;
       restartIfChanged = true;
     };
   };

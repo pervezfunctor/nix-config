@@ -47,5 +47,6 @@ with pkgs;
   wget
   yazi
   yq
+  zed-editor
   zoxide
 ]

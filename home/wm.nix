@@ -18,54 +18,50 @@
     fish
     flameshot
     font-awesome
-    gnome-keyring
+    gnome-themes-extra
     grim
-    gvfs
     htop
     imagemagick
     imv
+    inter
     kitty
     libcava
+    libnotify
     libqalculate
     lm_sensors
-    mako
     material-symbols
     matugen
     mpv
-    nautilus
     nerd-fonts.caskaydia-cove
     nerd-fonts.jetbrains-mono
     nerd-fonts.monaspace
-    networkmanager
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-cjk-serif
-    noto-fonts-color-emoji
-    nwg-displays
-    nwg-look
-    pamixer
-    papirus-icon-theme
-    pavucontrol
-    # polkit
-    # polkit_gnome
     pywal
     pywalfox-native
-    qt6
     qt6ct
     rofi
     slurp
     smartmontools
     swappy
     swww
-    udiskie
-    udisks2
+    waypaper
     wl-clip-persist
     wl-clipboard
     wlogout
     wlr-randr
     wlsunset
-    # xdg-desktop-portal
-    # xdg-desktop-portal-gtk
-    # xdg-desktop-portal-wlr
+    # mako
+    # noto-fonts
+    # noto-fonts-cjk-sans
+    # noto-fonts-cjk-serif
+    # noto-fonts-color-emoji
+    # nwg-displays
+    # nwg-displays
+    # nwg-look
+    # pamixer
+    # papirus-icon-theme
+    # pavucontrol
+    # pulseaudio
+    # udiskie
+    # udisks2
   ];
 }
