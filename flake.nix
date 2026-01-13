@@ -117,16 +117,15 @@
         nuc-vm =
           mkOS
             [
-              niriModules.nixosModule
-              swayModules.nixosModule
-              ./hosts/nuc-vm/configuration.nix
+              mango.nixosModules.mango
+              mangoModules.nixosModule
               gnomeModules.nixosModule
+              ./hosts/nuc-vm/configuration.nix
             ]
             [
-              niriModules.homeModule
-              swayModules.homeModule
               gnomeModules.homeModule
-              ./home/noctalia.nix
+              mangoModules.homeModule
+              ./home/dms.nix
             ];
       };
 
