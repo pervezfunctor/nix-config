@@ -84,7 +84,6 @@
     grim
     imagemagick
     imv
-    kitty
     libnotify
     lm_sensors
     matugen

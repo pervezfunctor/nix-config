@@ -24,7 +24,6 @@
     imagemagick
     imv
     inter
-    kitty
     libcava
     libnotify
     libqalculate
