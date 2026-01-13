@@ -35,7 +35,7 @@ input {
 
 layout {
     gaps 8
-    center-focused-column "always"
+    center-focused-column "on-overflow"
     always-center-single-column
     empty-workspace-above-first
 
@@ -277,12 +277,9 @@ debug {
   honor-xdg-activation-with-invalid-serial
 }
 
-spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=niri
+// spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=niri"
+
 spawn-at-startup "gnome-keyring"
+spawn-at-startup "noctalia-shell"
 spawn-sh-at-startup "wl-paste --watch cliphist store"
-
-spawen-sh-at-startup "$HOME/nix-config/scripts/idle"
-
-spawn-sh-at-startup noctalia-shell
-# spawn-sh-at-startup dms run
-# spawn-at-startup "hypridle"
+spawn-sh-at-startup "~/nix-config/scripts/idle"

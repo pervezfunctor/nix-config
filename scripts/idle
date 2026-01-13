@@ -1,5 +1,11 @@
 #! /usr/bin/env bash
 
+# if command -v systemd-detect-virt >/dev/null; then
+#   if systemd-detect-virt --quiet; then
+#     exit 0
+#   fi
+# fi
+
 is_any_running() {
   pgrep -f "$1" >/dev/null ||
     systemctl list-units --quiet --type=service | grep -q "^$1" ||
@@ -14,71 +20,12 @@ is_running() {
   pgrep -xu "$USER" "$1" >/dev/null || systemctl --user is-active --quiet "$1"
 }
 
-lockscreen() {
-  if is_running dms && has_cmd dms; then
-    dms ipc call lock lock
-  elif is_running noctalia-shell && has_cmd noctalia-shell; then
-    noctalia-shell ipc call lockscreen lock
-  elif is_running caelistia-shell && has_cmd caelistia-shell; then
-    caelistia-shell ipc call lockscreen lock
-  elif has_cmd swaylock; then
-    swaylock -f
-  else
-    echo "No lockscreen command found" >&2
-    return 1
-  fi
-}
-
-if command -v systemd-detect-virt >/dev/null; then
-  if systemd-detect-virt --quiet; then
-    return 0
-  fi
-fi
-
-monitor_off() {
-  if [[ "$XDG_CURRENT_DESKTOP" == *"Hyprland"* ]]; then
-    hyprctl dispatch dpms off
-  elif [[ "$XDG_CURRENT_DESKTOP" == *"mango"* ]]; then
-    mmsg -d disable_monitor,DP-1
-    mmsg -d disable_monitor,DP-2
-    mmsg -d disable_monitor,HDMI-A-1
-    mmsg -d disable_monitor,HDMI-A-2
-    mmsg -d disable_monitor,eDP-1
-  elif [[ "$XDG_CURRENT_DESKTOP" == *"niri"* ]]; then
-    niri msg action power-off-monitors
-  elif [[ "$XDG_CURRENT_DESKTOP" == *"sway"* ]]; then
-    swaymsg "output * power off"
-  else
-    has_cmd wlr-randr && wlr-randr --output '*' --off && return 0
-    return 1
-  fi
-}
-
-monitor_on() {
-  if [[ "$XDG_CURRENT_DESKTOP" == *"Hyprland"* ]]; then
-    hyprctl dispatch dpms on
-  elif [[ "$XDG_CURRENT_DESKTOP" == *"mango"* ]]; then
-    mmsg -d enable_monitor,DP-1
-    mmsg -d enable_monitor,DP-2
-    mmsg -d enable_monitor,HDMI-A-1
-    mmsg -d enable_monitor,HDMI-A-2
-    mmsg -d enable_monitor,eDP-1
-  elif [[ "$XDG_CURRENT_DESKTOP" == *"niri"* ]]; then
-    niri msg action power-on-monitors
-  elif [[ "$XDG_CURRENT_DESKTOP" == *"sway"* ]]; then
-    swaymsg "output * power on"
-  else
-    has_cmd wlr-randr && wlr-randr --output '*' --on && return 0
-    return 1
-  fi
-}
-
 if [[ "$XDG_CURRENT_DESKTOP" == *"Hyprland"* ]] && has_cmd hypridle; then
   hypridle \
-    --general lock_cmd="bash -c 'lockscreen'" \
-    --listener timeout=240 on-timeout="bash -c 'lockscreen'" \
-    --listener timeout=300 on-timeout="hyprctl dispatch dpms off" \
-    --listener on-resume="hyprctl dispatch dpms on" \
+    --general lock_cmd="bash -c 'scripts/lock'" \
+    --listener timeout=240 on-timeout="bash -c 'scripts/lock'" \
+    --listener timeout=300 on-timeout="bash -c 'scripts/monitor off'" \
+    --listener on-resume="bash -c 'scripts/monitor on'" \
     --listener timeout=600 on-timeout="systemctl suspend"
 elif [[ "$XDG_CURRENT_DESKTOP" == *"mango"* ]] ||
   [[ "$XDG_CURRENT_DESKTOP" == *"niri"* ]] ||
@@ -88,10 +35,10 @@ elif [[ "$XDG_CURRENT_DESKTOP" == *"mango"* ]] ||
     exit 1
   }
   swayidle -w \
-    timeout 240 'bash -c "lockscreen"' \
-    timeout 300 'bash -c "monitor_off"' \
-    resume 'bash -c "monitor_on"' \
-    timeout 600 'systemctl suspend'
+    timeout 240 'bash -c "scripts/lock"' \
+    timeout 300 'bash -c "scripts/monitor off"' \
+    resume 'bash -c "scripts/monitor on"'
+  # timeout 600 'systemctl suspend'
 else
   echo "No compatible compositor or idle manager found" >&2
   exit 1

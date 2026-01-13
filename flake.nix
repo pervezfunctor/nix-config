@@ -56,7 +56,6 @@
 
           modules = [
             ./core.nix
-            ./hosts/bd795/configuration.nix
             ./dev.nix
             ./apps.nix
             ./virt.nix
@@ -114,6 +113,21 @@
               mangoModules.nixosModule
             ]
             [ mangoModules.homeModule ./home/dms.nix ];
+        bd795 = mkOS (allOSModules ++ [ ./hosts/bd795/configuration.nix ]) allHomeModules;
+        nuc-vm =
+          mkOS
+            [
+              niriModules.nixosModule
+              swayModules.nixosModule
+              ./hosts/nuc-vm/configuration.nix
+              gnomeModules.nixosModule
+            ]
+            [
+              niriModules.homeModule
+              swayModules.homeModule
+              gnomeModules.homeModule
+              ./home/noctalia.nix
+            ];
       };
 
       homeConfigurations = {
