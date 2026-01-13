@@ -43,14 +43,14 @@ monitor_on() {
 }
 
 case "$1" in
-  on)
-    monitor_on
-    ;;
-  off)
-    monitor_off
-    ;;
-  *)
-    echo "Usage: $0 {on|off}" >&2
-    exit 1
-    ;;
+on)
+  monitor_on
+  ;;
+off)
+  monitor_off
+  ;;
+*)
+  echo "Usage: $0 {on|off}" >&2
+  exit 1
+  ;;
 esac

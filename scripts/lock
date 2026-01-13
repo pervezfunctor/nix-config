@@ -12,13 +12,12 @@ lockscreen() {
   if is_running dms && has_cmd dms; then
     dms ipc call lock lock
   elif is_running noctalia-shell && has_cmd noctalia-shell; then
-    noctalia-shell ipc call locksScreen lock
+    noctalia-shell ipc call lockScreen lock
   elif is_running caelistia-shell && has_cmd caelistia-shell; then
     # caelestia handles this itself
     # caelistia-shell ipc call lockscreen lock
     :
   elif has_cmd swaylock; then
-    echo "swaylock"
     swaylock -f
   else
     echo "No lockscreen command found" >&2
