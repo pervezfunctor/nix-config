@@ -102,7 +102,7 @@
         default = mkOS [ ] [ ];
         sway = mkOS [ swayModules.nixosModule ] [ swayModules.homeModule ./home/noctalia.nix ];
         gnome = mkOS [ gnomeModules.nixosModule ] [ gnomeModules.homeModule ];
-        niri = mkOS [ niriModules.nixosModule ] [ niriModules.homeModule ./home/noctalia.nix ];
+        niri = mkOS [ niriModules.nixosModule ] [ niriModules.homeModule ./home/dms.nix ];
         hyprland = mkOS [ hyprlandModules.nixosModule ] [ hyprlandModules.homeModule ./home/caelestia.nix ];
         all = mkOS allOSModules allHomeModules;
         nohm = mkOS allOSModules [ ];
@@ -112,7 +112,7 @@
               mango.nixosModules.mango
               mangoModules.nixosModule
             ]
-            [ mangoModules.homeModule ./home/dms.nix ];
+            [ mangoModules.homeModule ./home/noctalia.nix ];
         bd795 = mkOS (allOSModules ++ [ ./hosts/bd795/configuration.nix ]) allHomeModules;
         nuc-vm =
           mkOS
@@ -120,14 +120,14 @@
               mango.nixosModules.mango
               mangoModules.nixosModule
               gnomeModules.nixosModule
-              hyprlandModules.nixosModule
+              niriModules.nixosModule
               ./hosts/nuc-vm/configuration.nix
             ]
             [
               gnomeModules.homeModule
               mangoModules.homeModule
-              hyprlandModules.homeModule
-              ./home/caelestia.nix
+              niriModules.homeModule
+              ./home/noctalia.nix
               ./home/dms.nix
             ];
       };

@@ -8,7 +8,6 @@
     enable = true;
     systemd = {
       enable = true;
-      environment = [ ];
     };
 
     settings = {
@@ -21,9 +20,14 @@
     cli = {
       enable = true;
       settings = {
-        theme.enableGtk = true;
-        theme.enableIcons = true;
-        theme.enableCursor = true;
+        theme = {
+          enableTerm = true;
+          enableHypr = true;
+          enableQt = true;
+          enableGtk = true;
+          enableIcons = true;
+          enableCursor = true;
+        };
       };
     };
   };

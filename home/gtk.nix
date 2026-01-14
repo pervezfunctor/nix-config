@@ -50,9 +50,9 @@
     };
 
     "org/gnome/desktop/interface" = {
-      gtk-theme = "Adwaita-dark";
-      accent-color = "teal";
+      gtk-theme = "adw-gtk3";
       color-scheme = "prefer-dark";
+      # accent-color = "teal";
       gtk-key-theme = "Emacs";
       monospace-font-name = "JetbrainsMono Nerd Font 11";
     };

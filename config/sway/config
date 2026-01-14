@@ -1,5 +1,7 @@
 xwayland disable
 
+setenv QT_QPA_PLATFORMTHEME qt6ct
+
 input "type:keyboard" {
 	xkb_options caps:ctrl_modifier
 }
