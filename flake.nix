@@ -120,11 +120,14 @@
               mango.nixosModules.mango
               mangoModules.nixosModule
               gnomeModules.nixosModule
+              hyprlandModules.nixosModule
               ./hosts/nuc-vm/configuration.nix
             ]
             [
               gnomeModules.homeModule
               mangoModules.homeModule
+              hyprlandModules.homeModule
+              ./home/caelestia.nix
               ./home/dms.nix
             ];
       };

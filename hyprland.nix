@@ -7,10 +7,10 @@
       xwayland.enable = false;
     };
 
-    environment.sessionVariables = {
-      XDG_CURRENT_DESKTOP = "Hyprland";
-      XDG_SESSION_TYPE = "wayland";
-    };
+    # environment.sessionVariables = {
+    #   XDG_CURRENT_DESKTOP = "Hyprland";
+    #   XDG_SESSION_TYPE = "wayland";
+    # };
 
     environment.systemPackages = with pkgs; [
       # hyprcursor

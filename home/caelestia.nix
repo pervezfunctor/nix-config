@@ -7,7 +7,7 @@
   programs.caelestia = {
     enable = true;
     systemd = {
-      enable = false;
+      enable = true;
       environment = [ ];
     };
 

@@ -8,10 +8,10 @@
     ];
   };
 
-  environment.sessionVariables = {
-    XDG_CURRENT_DESKTOP = "wlroots";
-    XDG_SESSION_TYPE = "wayland";
-  };
+  # environment.sessionVariables = {
+  #   XDG_CURRENT_DESKTOP = "wlroots";
+  #   XDG_SESSION_TYPE = "wayland";
+  # };
 
   homeModule = {
     imports = [

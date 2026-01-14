@@ -13,10 +13,10 @@
     ];
   };
 
-  environment.sessionVariables = {
-    XDG_CURRENT_DESKTOP = "sway";
-    XDG_SESSION_TYPE = "wayland";
-  };
+  # environment.sessionVariables = {
+  #   XDG_CURRENT_DESKTOP = "sway";
+  #   XDG_SESSION_TYPE = "wayland";
+  # };
 
   homeModule = {
     home.pointerCursor.sway.enable = true;
