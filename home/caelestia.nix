@@ -15,11 +15,11 @@
       bar.status = {
         showBattery = false;
       };
-      paths.wallpaperDir = "~/Pictures/wallpapers";
+      paths.wallpaperDir = "~/Pictures/Wallpapers";
     };
 
     cli = {
-      enable = false;
+      enable = true;
       settings = {
         theme.enableGtk = true;
         theme.enableIcons = true;
