@@ -96,16 +96,22 @@
         ./home/dms.nix
         ./home/noctalia.nix
       ];
+
+      mkMin = config: mkOS [ config ] [ ];
+      mkNoHm = config: mkOS ([ config ] ++ allOSModules) [ ];
+      mkSway =
+        config: mkOS [ config swayModules.nixosModule ] [ swayModules.homeModule ./home/noctalia.nix ];
+      mkNiri = config: mkOS [ config niriModules.nixosModule ] [ niriModules.homeModule ./home/dms.nix ];
+      mkHyprland =
+        config:
+        mkOS [ config hyprlandModules.nixosModule ] [ hyprlandModules.homeModule ./home/caelestia.nix ];
+      mkAll = config: mkOS ([ config ] ++ allOSModules) allHomeModules;
+      mkGnome = config: mkOS [ config gnomeModules.nixosModule ] [ gnomeModules.homeModule ];
     in
     {
       nixosConfigurations = {
-        default = mkOS [ ] [ ];
-        sway = mkOS [ swayModules.nixosModule ] [ swayModules.homeModule ./home/noctalia.nix ];
-        gnome = mkOS [ gnomeModules.nixosModule ] [ gnomeModules.homeModule ];
-        niri = mkOS [ niriModules.nixosModule ] [ niriModules.homeModule ./home/dms.nix ];
-        hyprland = mkOS [ hyprlandModules.nixosModule ] [ hyprlandModules.homeModule ./home/caelestia.nix ];
-        all = mkOS allOSModules allHomeModules;
-        nohm = mkOS allOSModules [ ];
+        nixos = mkMin [ ./hosts/nixos/configuration.nix ] [ ];
+
         mango =
           mkOS
             [
@@ -113,7 +119,20 @@
               mangoModules.nixosModule
             ]
             [ mangoModules.homeModule ./home/noctalia.nix ];
+
         bd795 = mkOS (allOSModules ++ [ ./hosts/bd795/configuration.nix ]) allHomeModules;
+
+        niri-nuc-vm =
+          mkOS
+            [
+              niriModules.nixosModule
+              ./hosts/niri-nuc-vm/configuration.nix
+            ]
+            [
+              niriModules.homeModule
+              ./home/dms.nix
+            ];
+
         nuc-vm =
           mkOS
             [
@@ -130,6 +149,7 @@
               ./home/noctalia.nix
               ./home/dms.nix
             ];
+
       };
 
       homeConfigurations = {
