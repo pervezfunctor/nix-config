@@ -28,28 +28,9 @@
         font_family = "JetBrainsMono Nerd Font";
         font_size = 12;
         background_opacity = "0.96";
+        hide_window_decorations = true;
         include = "$HOME/.config/kitty/themes/noctalia.conf";
       };
     };
   };
 }
-
-#   gtk = {
-#     enable = true;
-
-#     theme = {
-#       package = pkgs.flat-remix-gtk;
-#       name = "Flat-Remix-GTK-Grey-Darkest";
-#     };
-
-#     iconTheme = {
-#       package = pkgs.adwaita-icon-theme;
-#       name = "Adwaita";
-#     };
-
-#     font = {
-#       name = "Sans";
-#       size = 11;
-#     };
-#   };
-# }

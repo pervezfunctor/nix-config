@@ -121,7 +121,7 @@
       nixosConfigurations = {
         nixos = mkMin [ ./hosts/nixos/configuration.nix ] [ ];
 
-        bd795 = mkOS (allOSModules ++ [ ./hosts/bd795/configuration.nix ]) allHomeModules;
+        bd795 = mkAll ./hosts/bd795/configuration.nix;
 
         niri-nuc-vm =
           mkOS

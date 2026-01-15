@@ -14,30 +14,19 @@
     };
   };
 
-  home.packages = with pkgs.gnomeExtensions; [
-    blur-my-shell
-    coverflow-alt-tab
-    just-perfection
-    paperwm
-    undecorate
-    user-themes
-    vitals
-    switcher
-  ];
-
   dconf.settings = {
     "org/gnome/shell" = {
       disable-user-extensions = false;
 
       enabled-extensions = with pkgs.gnomeExtensions; [
-        blur-my-shell.extensionUuid
-        coverflow-alt-tab.extensionUuid
-        just-perfection.extensionUuid
+        open-bar.extensionUuid
         paperwm.extensionUuid
-        undecorate.extensionUuid
-        user-themes.extensionUuid
-        vitals.extensionUuid
+        search-light.extensionUuid
         switcher.extensionUuid
+        user-themes.extensionUuid
+        windowsNavigator.extensionUuid
+        # switch-workspace.extensionUuid
+        # focus-follows-workspace.extensionUuid
       ];
     };
 
@@ -66,4 +55,30 @@
       num-workspaces = 4;
     };
   };
+
+  #     theme = {
+  #       package = pkgs.flat-remix-gtk;
+  #       name = "Flat-Remix-GTK-Grey-Darkest";
+  #     };
+
+  #     iconTheme = {
+  #       package = pkgs.adwaita-icon-theme;
+  #       name = "Adwaita";
+  #     };
+
+  #     font = {
+  #       name = "Sans";
+  #       size = 11;
+  #     };
+
+  # qt = {
+  #   enable = true;
+  #   platformTheme = "qtct";
+  #   style = "kvantum";
+  # };
+
+  # xdg.configFile = {
+  #   "Kvantum/ArcDark".source = "${pkgs.arc-kde-theme}/share/Kvantum/ArcDark";
+  #   "Kvantum/kvantum.kvconfig".text = "[General]\ntheme=ArcDark";
+  # };
 }

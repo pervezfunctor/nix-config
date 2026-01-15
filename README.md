@@ -2,6 +2,8 @@
 
 Get this config on your system with the following commands.
 
+**Tip**: Open this README.md in vscode with runme extension installed. You could execute the following commands easily.
+
 ```bash
 nix-shell -p git micro # use your favorite editor instead of micro
 git clone https://github.com/pervezfunctor/nix-config.git
@@ -41,13 +43,14 @@ Optionally, install the following `vscode` extensions.
 
 ```bash
 code --install-extension jnoortheen.nix-ide
+code --install-extension github.github-vscode-theme
 ```
 
 Add the following vscode settings(Optional)
 
 ```json
 {
-    "workbench.colorTheme": "Everforest Dark",
+    "workbench.colorTheme": "GitHub Dark Default",
     "editor.fontFamily": "JetbrainsMono Nerd Font",
     "editor.fontSize": 14,
     "nix.enableLanguageServer": true,
@@ -61,7 +64,6 @@ Add the following vscode settings(Optional)
 ```
 
 Reboot your system. Remember  to commit and push your code to a new repository(github/codeberg).
-
 
 ## Automated setup
 
