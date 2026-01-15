@@ -285,9 +285,7 @@ debug {
 }
 
 // spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=niri"
-
 spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets,ssh,pkcs11"
 spawn-sh-at-startup "dms run"
-// spawn-at-startup "noctalia-shell"
 spawn-sh-at-startup "wl-paste --watch cliphist store"
 spawn-sh-at-startup "~/nix-config/scripts/idle"

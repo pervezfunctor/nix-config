@@ -6,6 +6,8 @@ with pkgs;
   antigravity
   bat
   bitwarden-cli
+  claude-code
+  gemini-cli
   curl
   delta
   devbox

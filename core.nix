@@ -77,6 +77,7 @@
     bluez
     brightnessctl
     cliphist
+    dbus
     fastfetch
     ffmpegthumbnailer
     flameshot

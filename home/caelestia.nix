@@ -6,9 +6,7 @@
 
   programs.caelestia = {
     enable = true;
-    systemd = {
-      enable = true;
-    };
+    systemd.enable = true;
 
     settings = {
       bar.status = {
