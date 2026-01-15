@@ -107,18 +107,19 @@
         mkOS [ config hyprlandModules.nixosModule ] [ hyprlandModules.homeModule ./home/caelestia.nix ];
       mkAll = config: mkOS ([ config ] ++ allOSModules) allHomeModules;
       mkGnome = config: mkOS [ config gnomeModules.nixosModule ] [ gnomeModules.homeModule ];
+      mkMango =
+        config:
+        mkOS
+          [
+            config
+            mango.nixosModules.mango
+            mangoModules.nixosModule
+          ]
+          [ mangoModules.homeModule ./home/noctalia.nix ];
     in
     {
       nixosConfigurations = {
         nixos = mkMin [ ./hosts/nixos/configuration.nix ] [ ];
-
-        mango =
-          mkOS
-            [
-              mango.nixosModules.mango
-              mangoModules.nixosModule
-            ]
-            [ mangoModules.homeModule ./home/noctalia.nix ];
 
         bd795 = mkOS (allOSModules ++ [ ./hosts/bd795/configuration.nix ]) allHomeModules;
 
@@ -150,6 +151,14 @@
               ./home/dms.nix
             ];
 
+        # only for testing
+        sway = mkSway ./configuration.nix;
+        niri = mkNiri ./configuration.nix;
+        hyprland = mkHyprland ./configuration.nix;
+        mango = mkMango ./configuration.nix;
+        gnome = mkGnome ./configuration.nix;
+        noHm = mkNoHm ./configuration.nix;
+        all = mkAll ./configuration.nix;
       };
 
       homeConfigurations = {
