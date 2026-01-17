@@ -4,6 +4,7 @@ with pkgs;
 [
   act
   antigravity
+  bottom
   bat
   bitwarden-cli
   claude-code
@@ -24,10 +25,22 @@ with pkgs;
   delta
   htop
   jq
+  python3
+  tree-sitter
+  gcc
   just
+  lazygit
+  lazydocker
+  nodejs
+  gdu
+  luarocks
   neovim
+  imagemagick
   nerd-fonts.jetbrains-mono
   newt
+  ghostscript
+  tectonic
+  mermaid-cli
   nixd
   nixfmt-rfc-style
   openssl
