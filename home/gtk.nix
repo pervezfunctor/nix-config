@@ -28,9 +28,8 @@
         search-light.extensionUuid
         switcher.extensionUuid
         user-themes.extensionUuid
-        # windowsNavigator.extensionUuid
-        # switch-workspace.extensionUuid
-        # focus-follows-workspace.extensionUuid
+        windownavigator.extensionUuid
+        just-perfection.extensionUuid
       ];
     };
 

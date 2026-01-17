@@ -10,15 +10,19 @@
     programs.dconf.enable = true;
 
     environment.systemPackages = with pkgs; [
-      gnomeExtensions.blur-my-shell
-      gnomeExtensions.coverflow-alt-tab
-      gnomeExtensions.just-perfection
       gnomeExtensions.paperwm
-      gnomeExtensions.undecorate
       gnomeExtensions.user-themes
-      gnomeExtensions.vitals
       gnomeExtensions.switcher
-      gnome-tweaks
+      gnomeExtensions.open-bar
+      gnomeExtensions.search-light
+      gnomeExtensions.windownavigator
+      gnomeExtensions.just-perfection
+      # gnomeExtensions.blur-my-shell
+      # gnomeExtensions.coverflow-alt-tab
+      # gnomeExtensions.undecorate
+      # gnomeExtensions.vitals
+      # gnomeExtensions.switch-workspace
+      # gnomeExtensions.focus-follows-workspace
     ];
 
     # To disable installing GNOME's suite of applications
