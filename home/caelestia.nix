@@ -6,7 +6,10 @@
 
   programs.caelestia = {
     enable = true;
-    systemd.enable = true;
+    systemd = {
+      enable = true;
+      target = "wayland-session@Hyprland.target";
+    };
 
     settings = {
       bar.status = {

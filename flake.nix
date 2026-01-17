@@ -92,6 +92,7 @@
         niriModules.homeModule
         hyprlandModules.homeModule
         gnomeModules.homeModule
+        ./home/gtk.nix
         ./home/caelestia.nix
         ./home/dms.nix
         ./home/noctalia.nix
