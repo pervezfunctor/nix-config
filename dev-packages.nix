@@ -34,7 +34,6 @@ with pkgs;
   nodejs
   gdu
   luarocks
-  neovim
   imagemagick
   nerd-fonts.jetbrains-mono
   newt
