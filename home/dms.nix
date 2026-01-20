@@ -1,14 +1,14 @@
 { inputs, ... }:
 {
   imports = [
-    inputs.dms.homeModules.dankMaterialShell.default
+    inputs.dms.homeModules.dank-material-shell
+    # inputs.dms.homeModules.niri
   ];
 
-  programs.dankMaterialShell = {
+  programs.dank-material-shell = {
     enable = true;
 
     enableSystemMonitoring = true;
-    enableClipboard = true;
     enableDynamicTheming = true;
 
     systemd = {

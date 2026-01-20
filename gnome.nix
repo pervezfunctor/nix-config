@@ -5,8 +5,6 @@
     services.displayManager.gdm.enable = true;
     services.desktopManager.gnome.enable = true;
     security.pam.services.gdm.enableGnomeKeyring = true;
-    programs.gnome-keyring.enable = true;
-    programs.gnome-keyring.secrets = true;
     programs.dconf.enable = true;
 
     environment.systemPackages = with pkgs; [

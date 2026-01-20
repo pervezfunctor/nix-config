@@ -4,6 +4,9 @@
     dconf-editor
   ];
 
+  # programs.gnome-keyring.enable = true;
+  # programs.gnome-keyring.secrets = true;
+
   gtk = {
     enable = true;
 

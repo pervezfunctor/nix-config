@@ -12,6 +12,10 @@
     size = 32;
   };
 
+  home.packages = with pkgs; [
+    kitty
+  ];
+
   programs = {
     home-manager.enable = true;
 
@@ -22,15 +26,21 @@
     fzf.enable = true;
     zoxide.enable = true;
 
-    kitty = {
-      enable = true;
-      settings = {
-        font_family = "JetBrainsMono Nerd Font";
-        font_size = 12;
-        background_opacity = "0.96";
-        hide_window_decorations = true;
-        include = "$HOME/.config/kitty/themes/noctalia.conf";
-      };
+    # kitty = {
+    # enable = true;
+    # settings = {
+    #   font_family = "JetBrainsMono Nerd Font";
+    #   font_size = 12;
+    #   background_opacity = "0.96";
+    #   hide_window_decorations = true;
+    #   include = "$HOME/.config/kitty/dank-theme.conf";
+    # };
+    # };
+  };
+  home.file = {
+    ".config/kitty/kitty.conf" = {
+      source = ./config/kitty/kitty.conf;
+      force = true;
     };
   };
 }
