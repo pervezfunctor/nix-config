@@ -4,58 +4,56 @@ with pkgs;
 [
   act
   antigravity
-  bottom
   bat
   bitwarden-cli
+  bottom
   claude-code
-  gemini-cli
   curl
   delta
   devbox
   devenv
   distrobox
   eza
-  file
   fd
+  file
   fzf
   gcc
-  gh
-  gnumake
-  git
-  delta
-  htop
-  jq
-  python3
-  tree-sitter
-  gcc
-  just
-  lazygit
-  lazydocker
-  nodejs
   gdu
-  luarocks
+  gemini-cli
+  gh
+  ghostscript
+  git
+  gnumake
+  htop
   imagemagick
+  jq
+  just
+  lazydocker
+  lazygit
+  luarocks
+  mermaid-cli
   nerd-fonts.jetbrains-mono
   newt
-  ghostscript
-  tectonic
-  mermaid-cli
   nixd
   nixfmt-rfc-style
+  nodejs
   openssl
-  passt
   p7zip
+  passt
   procs
   ptyxis
+  python3
   ripgrep
   runme
   shellcheck
   shfmt
   stow
   tealdeer
+  tectonic
   tmux
   trash-cli
   tree
+  tree-sitter
   unzip
   vscode
   wget
