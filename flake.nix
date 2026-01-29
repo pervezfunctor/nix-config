@@ -135,21 +135,16 @@
               ./home/dms.nix
             ];
 
-        nuc-vm =
+        mango-nuc-vm =
           mkOS
             [
               mango.nixosModules.mango
               mangoModules.nixosModule
-              gnomeModules.nixosModule
-              niriModules.nixosModule
-              ./hosts/nuc-vm/configuration.nix
+              ./hosts/mango-nuc-vm/configuration.nix
             ]
             [
-              gnomeModules.homeModule
               mangoModules.homeModule
-              niriModules.homeModule
               ./home/noctalia.nix
-              ./home/dms.nix
             ];
 
         # only for testing
