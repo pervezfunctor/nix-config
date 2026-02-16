@@ -11,7 +11,9 @@ let
 in
 {
   # hardware.graphics.enable = true;
+  # services.smartd.enable = true;
   hardware.enableRedistributableFirmware = true;
+  hardware.bluetooth.enable = true;
 
   nixpkgs.config.allowUnfree = true;
 
@@ -77,7 +79,7 @@ in
     enableCompletion = true;
     inherit shellInit shellAliases;
   };
-
+  programs.fish.enable = true;
   programs.bash = {
     enable = true;
     completion.enable = true;

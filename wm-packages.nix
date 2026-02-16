@@ -37,7 +37,6 @@ with pkgs;
   pamixer
   papirus-icon-theme
   pavucontrol
-  pulseaudio
   pywal
   pywalfox-native
   qt6Packages.qt6ct
@@ -50,7 +49,6 @@ with pkgs;
   wl-clip-persist
   wl-clipboard
   wlogout
-  wlr-randr
   wlsunset
   # mako
 ]
