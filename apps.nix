@@ -6,5 +6,11 @@
     qbittorrent
     telegram-desktop
     zoom-us
+    vivaldi
   ];
 }
+
+# On KDE
+# (vivaldi.override {
+#   commandLineArgs = "--password-store=kwallet6";
+# })
