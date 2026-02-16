@@ -2,39 +2,33 @@
 
 set -euo pipefail
 
-# Colors for output
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
-readonly NC='\033[0m' # No Color
+readonly NC='\033[0m'
 
-# Global variables
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 HOSTNAME=""
 EXIT_CODE=0
-DRY_RUN=0
 
-# Trap errors and cleanup
 trap 'handle_error $? $LINENO' ERR
 trap 'handle_exit' EXIT
 
-# Error handling
 handle_error() {
-  local error_code=$1
-  local line_number=$2
+  local error_code="$1"
+  local line_number="$2"
   echo -e "${RED}✗ Error on line ${line_number}: Command exited with status ${error_code}${NC}" >&2
-  EXIT_CODE=$error_code
+  EXIT_CODE="$error_code"
 }
 
 handle_exit() {
-  if [ $EXIT_CODE -ne 0 ]; then
+  if [ "$EXIT_CODE" -ne 0 ]; then
     echo -e "${RED}=== Setup Failed ===${NC}"
-    exit $EXIT_CODE
+    exit "$EXIT_CODE"
   fi
 }
 
-# Utility functions
 has_cmd() {
   command -v "$1" &>/dev/null
 }
@@ -43,7 +37,6 @@ dir_exists() {
   [ -d "$1" ]
 }
 
-# Logging functions
 log_info() {
   echo -e "${GREEN}✓ $1${NC}"
 }
@@ -60,31 +53,15 @@ log_step() {
   echo -e "${YELLOW}$1${NC}"
 }
 
-# Die function - exit with error message
 die() {
   log_error "$1"
   exit 1
 }
 
-# Execute command or simulate it in dry-run mode
 run_cmd() {
-  if [ $DRY_RUN -eq 1 ]; then
-    log_info "[DRY-RUN] Would execute: $*"
-  else
-    "$@"
-  fi
+  "$@"
 }
 
-# Print action or simulate it in dry-run mode
-run_action() {
-  if [ $DRY_RUN -eq 1 ]; then
-    log_info "[DRY-RUN] Would execute: $1"
-  else
-    eval "$1"
-  fi
-}
-
-# Prompt function - ask user a yes/no question
 prompt_yn() {
   local question="$1"
   local default="${2:-y}"
@@ -99,8 +76,28 @@ prompt_yn() {
   [[ $REPLY =~ ^[Yy]$ ]]
 }
 
+print_help() {
+  echo "NixOS Config Setup Script"
+  echo ""
+  echo "Usage: setup [OPTIONS]"
+  echo ""
+  echo "Options:"
+  echo "  --help, -h    Show this help message"
+  echo ""
+  echo "This script sets up a NixOS configuration by:"
+  echo "  1. Checking prerequisites (nix, nixos-rebuild)"
+  echo "  2. Initializing a git repository (if needed)"
+  echo "  3. Creating a host directory for the current machine"
+  echo "  4. Copying existing NixOS configuration"
+  echo "  5. Helping edit flake.nix"
+  echo "  6. Rebuilding NixOS with the new configuration"
+  echo "  7. Setting up VSCode extensions and settings"
+}
+
 clone_repository() {
   log_step "Step 0: Cloning nix-config repository..."
+
+  cd "$SCRIPT_DIR" || die "Failed to change to script directory"
 
   if dir_exists ".git"; then
     log_warn "Repository already exists, skipping clone"
@@ -111,15 +108,26 @@ clone_repository() {
     die "nix is not installed. Please install Nix first."
   fi
 
-  if ! nix run nixpkgs#git -- clone --depth 1 https://github.com/pervezfunctor/nix-config.git .; then
+  local temp_dir
+  temp_dir=$(mktemp -d)
+  if ! nix run nixpkgs#git -- clone --depth 1 https://github.com/pervezfunctor/nix-config.git "$temp_dir"; then
+    rm -rf "$temp_dir"
     die "Failed to clone repository"
   fi
 
+  if ! cp -r "$temp_dir"/* "$SCRIPT_DIR/" 2>/dev/null; then
+    rm -rf "$temp_dir"
+    die "Failed to copy repository contents"
+  fi
+
+  rm -rf "$temp_dir"
   log_info "Repository cloned successfully"
 }
 
 check_prerequisites() {
   log_step "Checking prerequisites..."
+
+  cd "$SCRIPT_DIR" || die "Failed to change to script directory"
 
   if [ ! -f "flake.nix" ]; then
     die "flake.nix not found. Please run this script from the nix-config root directory."
@@ -127,10 +135,6 @@ check_prerequisites() {
 
   if ! has_cmd nixos-rebuild; then
     die "nixos-rebuild is not available. Please run this script on a NixOS system."
-  fi
-
-  if ! has_cmd jq; then
-    die "jq is not installed. Please install jq first."
   fi
 
   HOSTNAME=$(hostname) || die "Failed to get hostname"
@@ -145,9 +149,11 @@ check_prerequisites() {
 init_repository() {
   log_step "Step 1: Initializing repository..."
 
+  cd "$SCRIPT_DIR" || die "Failed to change to script directory"
+
   if dir_exists .git; then
-    log_warn "Removing existing .git directory..."
-    run_cmd rm -rf .git || die "Failed to remove .git directory"
+    log_warn "Git repository already exists, skipping initialization"
+    return 0
   fi
 
   run_cmd git init || die "Failed to initialize git repository"
@@ -155,6 +161,8 @@ init_repository() {
 }
 
 setup_host_directory() {
+  cd "$SCRIPT_DIR" || die "Failed to change to script directory"
+
   if dir_exists "hosts/${HOSTNAME}"; then
     log_warn "Host directory for '${HOSTNAME}' already exists, skipping creation"
     return 0
@@ -174,6 +182,8 @@ setup_host_directory() {
 copy_nixos_config() {
   log_step "Step 3: Copying NixOS configuration files..."
 
+  cd "$SCRIPT_DIR" || die "Failed to change to script directory"
+
   local host_dir="hosts/${HOSTNAME}"
   local config_src="/etc/nixos"
 
@@ -182,21 +192,29 @@ copy_nixos_config() {
     return 0
   fi
 
+  # Check for required files
   if [ ! -f "$config_src/configuration.nix" ]; then
     log_warn "configuration.nix not found at $config_src"
     return 0
   fi
 
-  if run_cmd cp "$config_src"/* "$host_dir/" 2>/dev/null; then
+  if [ ! -f "$config_src/hardware-configuration.nix" ]; then
+    log_warn "hardware-configuration.nix not found at $config_src"
+    return 0
+  fi
+
+  if cp "$config_src/configuration.nix" "$host_dir/" &&
+    cp "$config_src/hardware-configuration.nix" "$host_dir/"; then
     log_info "Configuration files copied to $host_dir"
   else
     log_warn "Some configuration files could not be copied (permission issues?)"
-    return 0
   fi
 }
 
 edit_flake_nix() {
   log_step "Step 4: Edit flake.nix"
+
+  cd "$SCRIPT_DIR" || die "Failed to change to script directory"
 
   echo "Please add the following entry to the flake.nix mkOS section:"
   echo -e "  ${GREEN}\"${HOSTNAME}\" = mkOS [ ./hosts/${HOSTNAME}/configuration.nix ] [];${NC}"
@@ -204,16 +222,12 @@ edit_flake_nix() {
   echo "You can edit flake.nix with your preferred editor (e.g., nano, vim, or micro)"
   echo ""
 
-  if [ $DRY_RUN -eq 1 ]; then
-    log_info "[DRY-RUN] Would skip editor launch"
-  else
-    local editor="${EDITOR:-nano}"
-    if prompt_yn "Press Enter to open flake.nix with ${editor}?"; then
-      if has_cmd "$editor"; then
-        "$editor" flake.nix || log_warn "Editor exited with non-zero status"
-      else
-        log_warn "Editor '$editor' not found. Please manually edit flake.nix"
-      fi
+  local editor="${EDITOR:-nano}"
+  if prompt_yn "Press Enter to open flake.nix with ${editor}?"; then
+    if has_cmd "$editor"; then
+      "$editor" flake.nix || log_warn "Editor exited with non-zero status"
+    else
+      log_warn "Editor '$editor' not found. Please manually edit flake.nix"
     fi
   fi
 
@@ -222,6 +236,8 @@ edit_flake_nix() {
 
 stage_changes() {
   log_step "Step 5: Staging changes..."
+
+  cd "$SCRIPT_DIR" || die "Failed to change to script directory"
 
   if ! run_cmd git add .; then
     die "Failed to stage changes"
@@ -240,12 +256,10 @@ rebuild_nixos() {
   log_step "Step 6: Rebuilding NixOS configuration..."
   echo "This requires sudo privileges and may take a while..."
 
-  if [ $DRY_RUN -eq 1 ]; then
-    log_info "[DRY-RUN] Would execute: sudo nixos-rebuild switch --flake .#"
-  else
-    if ! sudo nixos-rebuild switch --flake .#; then
-      die "NixOS rebuild failed"
-    fi
+  cd "$SCRIPT_DIR" || die "Failed to change to script directory"
+
+  if ! sudo nixos-rebuild switch --flake .#; then
+    die "NixOS rebuild failed"
   fi
 
   log_info "NixOS rebuild complete"
@@ -297,11 +311,6 @@ configure_vscode_settings() {
     return 0
   fi
 
-  if ! has_cmd jq; then
-    log_warn "jq is not installed, skipping VSCode settings configuration"
-    return 0
-  fi
-
   local config_settings_file="$SCRIPT_DIR/config/vscode/settings.json"
 
   if [ ! -f "$config_settings_file" ]; then
@@ -325,31 +334,21 @@ configure_vscode_settings() {
   fi
 
   if [ ! -f "$settings_file" ]; then
-    run_cmd sh -c "echo '{}' >\"$settings_file\""
+    printf '{}' >"$settings_file"
   fi
 
-  local settings
-  settings=$(cat "$config_settings_file")
-
-  if [ $DRY_RUN -eq 1 ]; then
-    log_info "[DRY-RUN] Would merge settings from $config_settings_file into $settings_file"
+  # shellcheck disable=SC2016
+  # Use '$new[0] + .' to preserve user's existing settings (only add missing keys)
+  if nix run nixpkgs#jq -- --slurpfile new "$config_settings_file" '$new[0] + .' "$settings_file" >"$settings_file.tmp" && mv "$settings_file.tmp" "$settings_file"; then
+    log_info "VSCode settings configured from $config_settings_file (existing settings preserved)"
   else
-    if jq ". + $settings" "$settings_file" >"$settings_file.tmp" && mv "$settings_file.tmp" "$settings_file"; then
-      log_info "VSCode settings configured from $config_settings_file"
-    else
-      log_warn "Failed to configure VSCode settings (non-fatal)"
-      rm -f "$settings_file.tmp"
-      return 0
-    fi
+    log_warn "Failed to configure VSCode settings (non-fatal)"
+    rm -f "$settings_file.tmp"
   fi
 }
 
 main() {
   echo -e "${GREEN}=== NixOS Config Setup ===${NC}\n"
-
-  if [ $DRY_RUN -eq 1 ]; then
-    echo -e "${YELLOW}DRY-RUN MODE: No changes will be made${NC}\n"
-  fi
 
   clone_repository
   check_prerequisites
@@ -364,28 +363,23 @@ main() {
   configure_vscode_settings
 
   echo ""
-  if [ $DRY_RUN -eq 1 ]; then
-    echo -e "${GREEN}=== Dry-Run Complete ===${NC}"
-    echo "No changes were made. Run without --dry-run to apply changes."
-  else
-    echo -e "${GREEN}=== Setup Complete ===${NC}"
-    echo "Your NixOS configuration is now ready!"
-    echo "Remember to reboot your system and commit your changes to a new repository."
-  fi
+  echo -e "${GREEN}=== Setup Complete ===${NC}"
+  echo "Your NixOS configuration is now ready!"
+  echo "Remember to reboot your system and commit your changes to a new repository."
 }
 
-# Parse command line arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-  --dry-run)
-    DRY_RUN=1
-    shift
+  --help | -h)
+    print_help
+    exit 0
     ;;
   *)
     echo "Unknown option: $1"
+    echo "Use --help for usage information"
     exit 1
     ;;
   esac
 done
 
-main "$@"
+main
