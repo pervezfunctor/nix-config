@@ -8,25 +8,21 @@
     ];
   };
 
-  # environment.sessionVariables = {
-  #   XDG_CURRENT_DESKTOP = "wlroots";
-  #   XDG_SESSION_TYPE = "wayland";
-  # };
-
   homeModule = {
     imports = [
       inputs.mango.hmModules.mango
     ];
 
+    systemd.user.targets.mango-session = {
+      Unit = {
+        Description = "mango compositor session";
+        Requires = [ "graphical-session.target" ];
+        After = [ "graphical-session.target" ];
+      };
+    };
+
     wayland.windowManager.mango = {
       enable = true;
-      # settings = ''
-      #   # see config.conf
-      # '';
-      # autostart_sh = ''
-      #   # see autostart.sh
-      #   # Note: here no need to add shebang
-      # '';
     };
 
     home.file = {
@@ -34,7 +30,6 @@
         source = ./config/mango/config.conf;
         force = true;
       };
-
     };
   };
 }
