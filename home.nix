@@ -18,25 +18,8 @@
 
   programs = {
     home-manager.enable = true;
-
-    bat.enable = true;
-    carapace.enable = true;
-    direnv.enable = true;
-    eza.enable = true;
-    fzf.enable = true;
-    zoxide.enable = true;
-
-    # kitty = {
-    # enable = true;
-    # settings = {
-    #   font_family = "JetBrainsMono Nerd Font";
-    #   font_size = 12;
-    #   background_opacity = "0.96";
-    #   hide_window_decorations = true;
-    #   include = "$HOME/.config/kitty/dank-theme.conf";
-    # };
-    # };
   };
+
   home.file = {
     ".config/kitty/kitty.conf" = {
       source = ./config/kitty/kitty.conf;

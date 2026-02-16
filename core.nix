@@ -1,7 +1,19 @@
 { pkgs, vars, ... }:
+let
+  shellInit = ''
+    if [[ -d "$HOME/.ilm" ]]; then
+      source "$HOME/.ilm/share/shellrc"
+    fi
+  '';
+  shellAliases = {
+    nrs = "update-os";
+  };
+in
 {
   # hardware.graphics.enable = true;
   hardware.enableRedistributableFirmware = true;
+
+  nixpkgs.config.allowUnfree = true;
 
   environment.sessionVariables = {
     XCURSOR_SIZE = "32";
@@ -17,7 +29,7 @@
   services.gnome.gnome-keyring.enable = true;
   services.udisks2.enable = true;
   services.gvfs.enable = true;
-  services.tumbler.enable = true;
+  services.tumbler.enable = true; # thumbnailer for nautilus/thunar
   programs.thunar.enable = true;
   programs.xfconf.enable = true;
 
@@ -32,19 +44,51 @@
     pulse.enable = true;
   };
 
-  users.users.${vars.username}.shell = pkgs.zsh;
+  nix = {
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      auto-optimise-store = true;
+    };
+    gc = {
+      automatic = true;
+      dates = "daily";
+      options = "--delete-older-than 2d";
+      persistent = true;
+    };
+  };
 
-  # systemd.user.services.kanshi = {
-  #   description = "kanshi daemon";
-  #   environment = {
-  #     WAYLAND_DISPLAY = "wayland-1";
-  #     DISPLAY = ":0";
-  #   };
-  #   serviceConfig = {
-  #     Type = "simple";
-  #     ExecStart = "${pkgs.kanshi}/bin/kanshi -c kanshi_config_file";
-  #   };
-  # };
+  programs.nix-ld.enable = true;
+
+  services.flatpak.enable = true;
+
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
+
+  users.defaultUserShell = pkgs.zsh;
+  programs.zsh = {
+    enable = true;
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
+    enableCompletion = true;
+    inherit shellInit shellAliases;
+  };
+
+  programs.bash = {
+    enable = true;
+    completion.enable = true;
+    inherit shellInit shellAliases;
+  };
+
+  programs.starship = {
+    enable = true;
+    interactiveOnly = true;
+    transientPrompt.enable = true;
+  };
 
   fonts = {
     packages = with pkgs; [
@@ -67,57 +111,14 @@
   };
 
   users.extraGroups.video.members = [ vars.username ];
+  programs.neovim.enable = true;
 
   environment.systemPackages = with pkgs; [
-    adw-gtk3
-    adwaita-fonts
-    adwaita-icon-theme
-    bibata-cursors
-    blueman
-    bluez
-    brightnessctl
-    cliphist
     dbus
-    fastfetch
-    ffmpegthumbnailer
-    flameshot
-    gnome-themes-extra
-    grim
-    imagemagick
-    imv
-    libnotify
-    lm_sensors
-    matugen
-    mpv
-    nautilus
-    nwg-displays
-    nwg-look
-    pamixer
-    papirus-icon-theme
-    pavucontrol
-    pulseaudio
-    pywal
-    pywalfox-native
-    rofi
-    slurp
-    smartmontools
-    swww
+    udisks2
     udiskie
-    waypaper
-    wl-clip-persist
     wl-clipboard
-    wlogout
-    wlr-randr
-    wlsunset
+    # adwaita-fonts
+    # adwaita-icon-theme
   ];
-
-  programs = {
-    neovim = {
-      enable = true;
-      # defaultEditor = true;
-      # viAlias = true;
-      # vimAlias = true;
-      # withPython3 = true;
-    };
-  };
 }

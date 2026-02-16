@@ -56,8 +56,8 @@
 
           modules = [
             ./core.nix
-            ./dev.nix
             ./apps.nix
+            ./wm.nix
             ./virt.nix
 
             home-manager.nixosModules.home-manager
@@ -72,6 +72,7 @@
           inherit system;
           modules = [
             ./home/wm.nix
+            ./home/dev.nix
             ./home/gtk.nix
           ]
           ++ homeImports;
@@ -93,6 +94,7 @@
         hyprlandModules.homeModule
         gnomeModules.homeModule
         ./home/gtk.nix
+        ./home/gnome.nix
         ./home/caelestia.nix
         ./home/dms.nix
         ./home/noctalia.nix
@@ -147,7 +149,8 @@
               ./home/noctalia.nix
             ];
 
-        # only for testing
+        # only for testing, you need to copy your system configuration
+        # for eg: cp -r /etc/nixos/ .
         sway = mkSway ./configuration.nix;
         niri = mkNiri ./configuration.nix;
         hyprland = mkHyprland ./configuration.nix;

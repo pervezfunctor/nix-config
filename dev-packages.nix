@@ -38,6 +38,7 @@ with pkgs;
   nixfmt
   nodejs
   nushell
+  opencode
   openssl
   p7zip
   passt

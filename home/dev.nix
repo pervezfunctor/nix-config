@@ -1,48 +1,123 @@
 { pkgs, ... }:
-
 {
-  nixpkgs.config.allowUnfree = true;
-
-  home.packages = import ./dev-packages.nix { inherit pkgs; };
+  home.packages = import ../dev-packages.nix { inherit pkgs; };
 
   programs = {
     zsh = {
       enable = true;
-      autosuggestions.enable = true;
-      syntaxHighlighting.enable = true;
-      enableCompletion = true;
-
       shellAliases = {
         update-os = "sudo nixos-rebuild switch --flake ~/nix-config\#";
       };
-
-      shellInit = ''
-        if [[ -d "$HOME/.ilm" ]]; then
-          source "$HOME/.ilm/share/shellrc"
-        fi
-      '';
     };
+
+    nushell = {
+      enable = true;
+      plugins = [ pkgs.nushellPlugins.formats ];
+      settings = {
+        show_banner = false;
+      };
+      # shellAliases = { };
+      # environmentVariables = { };
+      # configFile.source = ./config/nu/config.nu;
+      # envFile.source = ./config/nu/env.nu;
+      # extraConfig = '' '';
+    };
+
+    broot = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
+    atuin = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
+    fzf = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+    };
+
+    zoxide = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
+    # yazi = {
+    #   enable = true;
+    #   enableZshIntegration = true;
+    #   enableBashIntegration = true;
+    #   enableNushellIntegration = true;
+    # };
 
     starship = {
       enable = true;
-      interactiveOnly = true;
-      transientPrompt.right = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
+    nix-index = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
+    mise = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
+    lazygit = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
+    keychain = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
+    eza = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
+    };
+
+    carapace = {
+      enable = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableNushellIntegration = true;
     };
 
     direnv = {
       enable = true;
       enableBashIntegration = true;
       enableZshIntegration = true;
+      enableNushellIntegration = true;
       nix-direnv.enable = true;
     };
   };
-
-  programs.nix-ld.enable = true;
-
-  services.flatpak.enable = true;
-
-  programs.appimage = {
-    enable = true;
-    binfmt = true;
-  };
 }
+
+#  bash.interactiveShellInit = ''
+#       if ! [ "$TERM" = "dumb" ] && [ -z "$BASH_EXECUTION_STRING" ]; then
+#         exec nu
+#       fi
+#     '';
