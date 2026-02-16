@@ -87,6 +87,7 @@
 
     keychain = {
       enable = true;
+      keys = [ "id_ed25519" ];
       enableZshIntegration = true;
       enableBashIntegration = true;
       enableNushellIntegration = true;
