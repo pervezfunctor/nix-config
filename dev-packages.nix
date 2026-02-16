@@ -35,8 +35,9 @@ with pkgs;
   nerd-fonts.jetbrains-mono
   newt
   nixd
-  nixfmt-rfc-style
+  nixfmt
   nodejs
+  nushell
   openssl
   p7zip
   passt
