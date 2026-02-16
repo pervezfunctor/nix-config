@@ -1,10 +1,9 @@
 { pkgs, ... }:
 
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    ./hardware-configuration.nix
+  ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -47,11 +46,13 @@
   users.users.pervez = {
     isNormalUser = true;
     description = "Pervez Iqbal";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
   };
 
   programs.firefox.enable = true;
-  nixpkgs.config.allowUnfree = true;
   services.openssh.enable = true;
 
   # This value determines the NixOS release from which the default
