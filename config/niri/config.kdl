@@ -289,3 +289,11 @@ spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets,ssh,pkcs1
 spawn-sh-at-startup "dms run"
 spawn-sh-at-startup "wl-paste --watch cliphist store"
 spawn-sh-at-startup "~/nix-config/scripts/idle"
+
+include "dms/alttab.kdl"
+include "dms/binds.kdl"
+include "dms/colors.kdl"
+include "dms/cursor.kdl"
+include "dms/layout.kdl"
+include "dms/outputs.kdl"
+include "dms/wpblur.kdl"
