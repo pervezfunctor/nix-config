@@ -34,17 +34,17 @@
 
   users.users.${vars.username}.shell = pkgs.zsh;
 
-  systemd.user.services.kanshi = {
-    description = "kanshi daemon";
-    environment = {
-      WAYLAND_DISPLAY = "wayland-1";
-      DISPLAY = ":0";
-    };
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = ''${pkgs.kanshi}/bin/kanshi -c kanshi_config_file'';
-    };
-  };
+  # systemd.user.services.kanshi = {
+  #   description = "kanshi daemon";
+  #   environment = {
+  #     WAYLAND_DISPLAY = "wayland-1";
+  #     DISPLAY = ":0";
+  #   };
+  #   serviceConfig = {
+  #     Type = "simple";
+  #     ExecStart = "${pkgs.kanshi}/bin/kanshi -c kanshi_config_file";
+  #   };
+  # };
 
   fonts = {
     packages = with pkgs; [
@@ -89,6 +89,7 @@
     lm_sensors
     matugen
     mpv
+    nautilus
     nwg-displays
     nwg-look
     pamixer
