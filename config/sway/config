@@ -1,7 +1,5 @@
 xwayland disable
 
-setenv QT_QPA_PLATFORMTHEME qt6ct
-
 input "type:keyboard" {
 	xkb_options caps:ctrl_modifier
 }
@@ -61,7 +59,7 @@ exec swayidle -w \
   resume 'pgrep -xu "$USER" swaylock >/dev/null && swaymsg "output * power on"' \
   before-sleep '$screenlock -f' \
   lock '$screenlock -f' \
-  unlock 'pkill -xu "$USER" -SIGUSR1 swaylock'
+  unlock 'pkill -xu "$USER" -SIGUSR1 swaylock' \
   timeout 600 'systemctl suspend'
 
 exec_always {
