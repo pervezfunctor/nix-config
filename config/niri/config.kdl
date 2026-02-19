@@ -290,6 +290,8 @@ spawn-sh-at-startup "dms run"
 spawn-sh-at-startup "wl-paste --watch cliphist store"
 spawn-sh-at-startup "~/nix-config/scripts/idle"
 
+include "source/local.kdl"
+
 include "dms/alttab.kdl"
 include "dms/binds.kdl"
 include "dms/colors.kdl"
