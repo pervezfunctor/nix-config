@@ -23,68 +23,27 @@ set $term kitty
 
 set $menu noctalia-shell ipc call launcher toggle
 
-# set $screenlock 'swaylock --config ~/.ilm/suseway/dot-config/swaylock.conf'
-# set $screenlock noctalia-shell ipc call sessionMenu lock
-set $menu_window rofi -show window
-set $wob wob --config /etc/sway/wob/wob.ini
 
-set $screenlock swaylock \
-  --screenshots \
-  --effect-blur 7x5 \
-  --clock \
-  --indicator \
-  --indicator-radius 120 \
-  --indicator-thickness 10 \
-  --ring-color 5e81ac \
-  --ring-ver-color a3be8c \
-  --ring-wrong-color bf616a \
-  --ring-clear-color ebcb8b \
-  --inside-color 2e344080 \
-  --inside-ver-color 2e344080 \
-  --inside-wrong-color 2e344080 \
-  --inside-clear-color 2e344080 \
-  --line-color 00000000 \
-  --separator-color 00000000 \
-  --text-color eceff4 \
-  --text-ver-color eceff4 \
-  --text-wrong-color eceff4 \
-  --text-clear-color eceff4 \
-  --fade-in 0.3
+set $screenlock noctalia-shell ipc call sessionMenu lock
 
 exec swayidle -w \
   timeout 240 '$screenlock -f' \
   timeout 300 'swaymsg "output * power off"' \
   resume 'swaymsg "output * power on"' \
-  timeout 180 'pgrep -xu "$USER" swaylock >/dev/null && swaymsg "output * power off"' \
-  resume 'pgrep -xu "$USER" swaylock >/dev/null && swaymsg "output * power on"' \
   before-sleep '$screenlock -f' \
-  lock '$screenlock -f' \
-  unlock 'pkill -xu "$USER" -SIGUSR1 swaylock' \
   timeout 600 'systemctl suspend'
-
-exec_always {
-    systemctl --user import-environment
-    gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
-    gsettings set org.gnome.desktop.interface icon-theme 'Adwaita'
-    gsettings set org.gnome.desktop.interface cursor-theme 'Adwaita'
-    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-    test -e $SWAYSOCK.wob || mkfifo $SWAYSOCK.wob
-    tail -f $SWAYSOCK.wob | $wob
-    swaync --style ~/.config/swaync/style.css --config ~/.config/swaync/config.json
-}
 
 default_border pixel 3
 default_floating_border pixel 3
 
-gaps inner 4
-gaps outer 2
+gaps inner 8
+gaps outer 8
 
 smart_borders on
 # smart_gaps on
 
 bindsym $mod+shift+g exec swaymsg gaps outer all set 0 && swaymsg gaps inner all set 5
 bindsym $mod+g exec swaymsg gaps outer all set 0 && swaymsg gaps inner all set 0
-
 
 bindsym $mod+Return exec $term
 bindsym $mod+Shift+q kill
@@ -183,64 +142,6 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
-set $selected_window swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp
-set $focused_window swaymsg -t get_tree | jq -j '.. | select(.type?) | select(.focused).rect | "\(.x),\(.y) \(.width)x\(.height)"'
-set $focused_output swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name'
-
-set $screenshot_full grim
-set $screenshot_full_clipboard grim - | wl-copy
-
-set $screenshot_selected_window $selected_window | grim -g-
-set $screenshot_selected_window_clipboard $selected_window | grim -g- - | wl-copy
-
-set $screenshot_selected_area slurp | grim -g-
-set $screenshot_selected_area_clipboard slurp | grim -g- - | wl-copy
-
-set $screenshot_focused_window $focused_window | grim -g-
-set $screenshot_focused_window_clipboard $focused_window | grim -g- - | wl-copy
-
-set $screenshot_focused_output grim -o $($focused_output)
-set $screenshot_focused_output_clipboard grim -o $($focused_output) - | wl-copy
-
-set $screenshot "Screenshot: (f) full, (s) select window, (a) select area, (w) focused window, (o) focused output [Ctrl+ saves to clipboard]"
-mode $screenshot {
-    # Full
-    bindsym f exec $screenshot_full; mode "default"
-    bindsym Ctrl+f exec $screenshot_full_clipboard; mode "default"
-    # Selected window
-    bindsym s exec $screenshot_selected_window; mode "default"
-    bindsym Ctrl+s exec $screenshot_selected_window_clipboard; mode "default"
-    # Selected area
-    bindsym a exec $screenshot_selected_area; mode "default"
-    bindsym Ctrl+a exec $screenshot_selected_area_clipboard; mode "default"
-    # Focused window
-    bindsym w exec $screenshot_focused_window; mode "default"
-    bindsym Ctrl+w exec $screenshot_focused_window_clipboard; mode "default"
-    # Focused output
-    bindsym o exec $screenshot_focused_output; mode "default"
-    bindsym Ctrl+o exec $screenshot_focused_output_clipboard; mode "default"
-
-    # Exit screenshot mode menu
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-    bindsym $mod+Print mode "default"
-}
-bindsym $mod+Print mode $screenshot
-
-set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
-mode "$mode_system" {
-    bindsym l exec swaylock, mode "default"
-    bindsym s exec systemctl suspend, mode "default"
-    bindsym u exec systemctl restart sddm, mode "default"
-    bindsym e exec swaymsg exit, mode "default"
-    bindsym h exec systemctl hibernate, mode "default"
-    bindsym r exec systemctl reboot, mode "default"
-    bindsym Shift+s exec systemctl poweroff, mode "default"
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
-bindsym $mod+0 mode "$mode_system"
-
 # Open specific applications in floating mode
 for_window [title="File Transfer*"] floating enable
 for_window [class="qt5ct"] floating enable sticky enable border normal
@@ -263,8 +164,28 @@ for_window [app_id="lxqt-policykit-agent"] {
     move position center
 }
 
-for_window [app_id="org.mozilla.firefox"] opacity 0.98
-for_window [app_id="code"] opacity 0.98
+bindsym $mod+alt+shift+l exec noctalia-shell ipc call lockScreen lock
+bindsym $mod+space exec noctalia-shell ipc call launcher toggle
+bindsym $mod+C exec noctalia-shell ipc call launcher clipboard
+bindsym $mod+alt+C exec noctalia-shell ipc call launcher calculator
+bindsym $mod+shift+comma exec noctalia-shell ipc call controlCenter toggle
+bindsym $mod+comma exec noctalia-shell ipc call settings toggle
+
+# # Audio controls
+# bindel = , XF86AudioRaiseVolume, exec, noctalia-shell ipc call volume increase
+# bindel = , XF86AudioLowerVolume, exec, noctalia-shell ipc call volume decrease
+# bindl = , XF86AudioMute, exec, noctalia-shell ipc call volume muteOutput
+
+# # Brightness controls
+# bindel = , XF86MonBrightnessUp, exec, noctalia-shell ipc call brightness increase
+# bindel = , XF86MonBrightnessDown, exec, noctalia-shell ipc call brightness decrease
+
+include /etc/sway/config.d/*
+exec wl-paste --watch cliphist store
+exec systemctl --user start noctalia-shell
+
+include ~/.config/sway/local
+include ~/.config/sway/noctalia
 
 # # DMS Keybindings
 # bindsym $mod+shift+return exec dms ipc call spotlight toggle
@@ -279,35 +200,3 @@ for_window [app_id="code"] opacity 0.98
 # # Brightness controls
 # bindsym XF86MonBrightnessUp exec dms ipc call brightness increment 5
 # bindsym XF86MonBrightnessDown exec dms ipc call brightness decrement 5
-
-
-# # Audio controls
-# bindel = , XF86AudioRaiseVolume, exec, noctalia-shell ipc call volume increase
-# bindel = , XF86AudioLowerVolume, exec, noctalia-shell ipc call volume decrease
-# bindl = , XF86AudioMute, exec, noctalia-shell ipc call volume muteOutput
-
-# # Brightness controls
-# bindel = , XF86MonBrightnessUp, exec, noctalia-shell ipc call brightness increase
-# bindel = , XF86MonBrightnessDown, exec, noctalia-shell ipc call brightness decrease
-
-bindsym $mod+alt+shift+l exec noctalia-shell ipc call lockScreen lock
-bindsym $mod+space exec noctalia-shell ipc call launcher toggle
-# bindsym $mod+V exec noctalia-shell ipc call launcher clipboard
-# bindsym $mod+C exec noctalia-shell ipc call launcher calculator
-# bind $mod+S exec noctalia-shell ipc call controlCenter toggle
-# bind $mod+comma exec noctalia-shell ipc call settings toggle
-
-include ~/.config/sway/local
-
-include /etc/sway/config.d/*
-exec wl-paste --watch cliphist store
-
-# exec noctalia-shell
-# exec dms run
-
-# exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-# exec /usr/libexec/lxqt-policykit-agent
-# exec /usr/libexec/polkit-gnome-authentication-agent-1
-
-# exec gnome-keyring
-# exec sleep 5; systemctl --user start kanshi.service

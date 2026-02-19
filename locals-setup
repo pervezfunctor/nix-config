@@ -12,3 +12,6 @@ touch ~/.config/hypr/dms/{colors,layout,outputs}.conf
 
 mkdir -p ~/.config/mango/dms
 touch ~/.config/mango/dms/{colors,layout,outputs}.conf
+
+touch ~/.config/sway/noctalia
+touch ~/.config/mango/noctalia.conf
