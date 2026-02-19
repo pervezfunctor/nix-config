@@ -286,16 +286,14 @@ debug {
 
 // spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=niri"
 spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets,ssh,pkcs11"
-spawn-sh-at-startup "dms run"
 spawn-sh-at-startup "wl-paste --watch cliphist store"
 spawn-sh-at-startup "~/nix-config/scripts/idle"
 
-include "source/local.kdl"
+include "local.kdl"
 
+spawn-sh-at-startup "dms run"
+
+include "dms/colors.kdl"
+include "dms/layout.kdl"
 include "dms/alttab.kdl"
 include "dms/binds.kdl"
-include "dms/colors.kdl"
-include "dms/cursor.kdl"
-include "dms/layout.kdl"
-include "dms/outputs.kdl"
-include "dms/wpblur.kdl"

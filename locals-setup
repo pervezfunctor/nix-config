@@ -1,0 +1,14 @@
+touch ~/.config/hypr/local.conf
+touch ~/.config/kitty/local.conf
+touch ~/.config/mango/local.conf
+touch ~/.config/niri/local.kdl
+touch ~/.config/sway/local
+
+mkdir -p ~/.config/niri/dms
+touch ~/.config/niri/dms/{colors,layout,alttab,binds}.kdl
+
+mkdir -p ~/.config/hypr/dms
+touch ~/.config/hypr/dms/{colors,layout,outputs}.conf
+
+mkdir -p ~/.config/mango/dms
+touch ~/.config/mango/dms/{colors,layout,outputs}.conf

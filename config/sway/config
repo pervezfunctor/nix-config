@@ -299,7 +299,7 @@ bindsym $mod+space exec noctalia-shell ipc call launcher toggle
 # bind $mod+S exec noctalia-shell ipc call controlCenter toggle
 # bind $mod+comma exec noctalia-shell ipc call settings toggle
 
-include ~/.config/sway/local.conf
+include ~/.config/sway/local
 
 include /etc/sway/config.d/*
 exec wl-paste --watch cliphist store
