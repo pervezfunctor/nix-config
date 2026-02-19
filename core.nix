@@ -103,12 +103,15 @@ in
       noto-fonts
       noto-fonts-color-emoji
     ];
-    fontconfig.defaultFonts = {
-      serif = [ "Noto Serif" ];
-      sansSerif = [
-        "Inter"
-        "Noto Sans"
-      ];
+    fontconfig = {
+      enable = true;
+      # defaultFonts = {
+      #   serif = [ "Noto Serif" ];
+      #   sansSerif = [
+      #     "Inter"
+      #     "Noto Sans"
+      #   ];
+      # };
     };
   };
 
@@ -120,7 +123,9 @@ in
     udisks2
     udiskie
     wl-clipboard
-    # adwaita-fonts
-    # adwaita-icon-theme
+    libxcb
+    libxcb-wm
+    adwaita-fonts
+    adwaita-icon-theme
   ];
 }

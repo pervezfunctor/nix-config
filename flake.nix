@@ -48,22 +48,22 @@
       niriModules = import ./niri.nix { inherit inputs pkgs; };
       hyprlandModules = import ./hyprland.nix { inherit inputs pkgs; };
 
+      baseOSModules = [
+        ./core.nix
+        ./apps.nix
+        ./wm.nix
+        ./virt.nix
+
+        home-manager.nixosModules.home-manager
+        ./homeModule.nix
+      ];
       mkOS =
         osModules: homeImports:
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit inputs vars homeImports; };
 
-          modules = [
-            ./core.nix
-            ./apps.nix
-            ./wm.nix
-            ./virt.nix
-
-            home-manager.nixosModules.home-manager
-            ./homeModule.nix
-          ]
-          ++ osModules;
+          modules = baseOSModules ++ osModules;
         };
 
       mkHome =
