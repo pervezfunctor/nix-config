@@ -62,7 +62,6 @@
       "networkmanager"
       "wheel"
     ];
-    packages = with pkgs; [ ];
   };
 
   # Enable automatic login for the user.
