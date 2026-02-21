@@ -7,6 +7,7 @@
     telegram-desktop
     zoom-us
     vivaldi
+    vulkan-tools
   ];
 }
 

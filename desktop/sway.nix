@@ -23,7 +23,7 @@
 
     home.file = {
       ".config/sway/config" = {
-        source = ./config/sway/config;
+        source = ../config/sway/config;
         force = true;
       };
     };

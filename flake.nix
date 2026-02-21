@@ -43,20 +43,21 @@
       pkgs = import nixpkgs { inherit system; };
       vars = import ./vars.nix;
 
-      mangoModules = import ./mango.nix { inherit inputs pkgs; };
-      swayModules = import ./sway.nix { inherit inputs pkgs; };
-      gnomeModules = import ./gnome.nix { inherit inputs pkgs; };
-      niriModules = import ./niri.nix { inherit inputs pkgs; };
-      hyprlandModules = import ./hyprland.nix { inherit inputs pkgs; };
+      mangoModules = import ./desktop/mango.nix { inherit inputs pkgs; };
+      swayModules = import ./desktop/sway.nix { inherit inputs pkgs; };
+      gnomeModules = import ./desktop/gnome.nix { inherit inputs pkgs; };
+      niriModules = import ./desktop/niri.nix { inherit inputs pkgs; };
+      hyprlandModules = import ./desktop/hyprland.nix { inherit inputs pkgs; };
 
       baseOSModules = [
-        ./core.nix
-        ./apps.nix
-        ./wm.nix
-        ./virt.nix
+        ./core/core.nix
+        ./core/virt.nix
+        ./desktop/portal.nix
+        ./desktop/apps.nix
+        ./desktop/wm.nix
 
         home-manager.nixosModules.home-manager
-        ./homeModule.nix
+        ./core/homeModule.nix
       ];
       mkOS =
         osModules: homeImports:

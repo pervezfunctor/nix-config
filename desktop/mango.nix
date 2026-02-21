@@ -27,7 +27,7 @@
 
     home.file = {
       ".config/mango/config.conf" = {
-        source = ./config/mango/config.conf;
+        source = ../config/mango/config.conf;
         force = true;
       };
     };

@@ -20,7 +20,6 @@ with pkgs;
   yubikey-touch-detector
   yubioath-flutter
   # wireguard-tools
-  # xdg-desktop-portal-gnome
   # sbctl
   # cfssl
   # zig
