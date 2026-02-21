@@ -40,6 +40,7 @@ with pkgs;
   pywal
   pywalfox-native
   qt6Packages.qt6ct
+  quickshell
   rofi
   slurp
   smartmontools

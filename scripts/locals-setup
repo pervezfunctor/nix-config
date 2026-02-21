@@ -5,13 +5,14 @@ touch ~/.config/niri/local.kdl
 touch ~/.config/sway/local
 
 mkdir -p ~/.config/niri/dms
-touch ~/.config/niri/dms/{colors,layout,alttab,binds}.kdl
+touch ~/.config/niri/dms/{colors,cursor,layout,alttab,binds}.kdl
+touch ~/.config/niri/local.kdl
 
 mkdir -p ~/.config/hypr/dms
-touch ~/.config/hypr/dms/{colors,layout,outputs}.conf
+touch ~/.config/hypr/dms/{colors,cursor,layout,outputs}.conf
 
 mkdir -p ~/.config/mango/dms
-touch ~/.config/mango/dms/{colors,layout,outputs}.conf
+touch ~/.config/mango/dms/{colors,cursor,layout,outputs}.conf
 
 touch ~/.config/sway/noctalia
 touch ~/.config/mango/noctalia.conf
