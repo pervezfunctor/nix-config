@@ -14,6 +14,19 @@
       enable = true;
       plugins = [ pkgs.nushellPlugins.formats ];
       settings = {
+        fzf = {
+          enable = true;
+          enableZshIntegration = true;
+          enableBashIntegration = true;
+        };
+
+        zoxide = {
+          enable = true;
+          enableZshIntegration = true;
+          enableBashIntegration = true;
+          enableNushellIntegration = true;
+        };
+
         show_banner = false;
       };
       # shellAliases = { };
