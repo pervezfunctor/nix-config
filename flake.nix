@@ -32,6 +32,7 @@
 
   outputs =
     {
+      self,
       nixpkgs,
       home-manager,
       mango,
@@ -159,6 +160,11 @@
         noHm = mkNoHm ./configuration.nix;
         all = mkAll ./configuration.nix;
       };
+
+      packages.${system} = nixpkgs.lib.mapAttrs' (n: v: {
+        name = "${n}-vm";
+        value = v.config.system.build.vm;
+      }) self.nixosConfigurations;
 
       homeConfigurations = {
         noctalia = mkHome [ ./home/noctalia.nix ];
