@@ -34,6 +34,7 @@ with pkgs;
   mermaid-cli
   nerd-fonts.jetbrains-mono
   newt
+  nil
   nixd
   nixfmt
   nodejs

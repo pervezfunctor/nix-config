@@ -123,7 +123,7 @@
     in
     {
       nixosConfigurations = {
-        nixos = mkMin [ ./hosts/nixos/configuration.nix ] [ ];
+        nixos = mkMin ./hosts/nixos/configuration.nix;
 
         bd795 = mkAll ./hosts/bd795/configuration.nix;
 
@@ -151,14 +151,14 @@
             ];
 
         # only for testing, you need to copy your system configuration
-        # for eg: cp -r /etc/nixos/ .
-        sway = mkSway ./configuration.nix;
-        niri = mkNiri ./configuration.nix;
-        hyprland = mkHyprland ./configuration.nix;
-        mango = mkMango ./configuration.nix;
-        gnome = mkGnome ./configuration.nix;
-        noHm = mkNoHm ./configuration.nix;
-        all = mkAll ./configuration.nix;
+        # for eg: cp  /etc/nixos/* ./nixos/
+        sway = mkSway ./hosts/nixos/configuration.nix;
+        niri = mkNiri ./hosts/nixos/configuration.nix;
+        hyprland = mkHyprland ./hosts/nixos/configuration.nix;
+        mango = mkMango ./hosts/nixos/configuration.nix;
+        gnome = mkGnome ./hosts/nixos/configuration.nix;
+        noHm = mkNoHm ./hosts/nixos/configuration.nix;
+        all = mkAll ./hosts/nixos/configuration.nix;
       };
 
       packages.${system} = nixpkgs.lib.mapAttrs' (n: v: {
