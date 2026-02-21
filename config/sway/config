@@ -182,7 +182,8 @@ bindsym $mod+comma exec noctalia-shell ipc call settings toggle
 
 include /etc/sway/config.d/*
 exec wl-paste --watch cliphist store
-exec systemctl --user start noctalia-shell
+exec noctalia-shell
+# exec systemctl --user start noctalia-shell
 
 include ~/.config/sway/local
 include ~/.config/sway/noctalia

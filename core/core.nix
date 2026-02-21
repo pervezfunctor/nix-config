@@ -26,6 +26,8 @@ in
     # QT_QPA_PLATFORMTHEME_QT6 = "gtk3";
   };
 
+  services.power-profiles-daemon.enable = true; # or services.tuned.enable for laptop
+  services.upower.enable = true;
   services.dbus.enable = true;
   security.polkit.enable = true;
   services.gnome.gnome-keyring.enable = true;
