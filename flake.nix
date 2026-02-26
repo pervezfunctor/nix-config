@@ -70,15 +70,16 @@
 
       mkHome =
         homeImports:
-        home-manager.lib.homeConfiguration {
-          inherit system;
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.${system};
           modules = [
+            ./core/home.nix
             ./home/wm.nix
             ./home/dev.nix
             ./home/gtk.nix
           ]
           ++ homeImports;
-          specialArgs = { inherit inputs vars; };
+          extraSpecialArgs = { inherit inputs vars; };
         };
 
       allOSModules = [
@@ -171,6 +172,16 @@
         noctalia = mkHome [ ./home/noctalia.nix ];
         dms = mkHome [ ./home/dms.nix ];
         caelestia = mkHome [ ./home/caelestia.nix ];
+
+        dmsOnly = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.${system};
+          modules = [
+            ./core/home.nix
+            ./home/dms.nix
+            ./home/min-packages.nix
+          ];
+          extraSpecialArgs = { inherit inputs vars; };
+        };
       };
     };
 }
