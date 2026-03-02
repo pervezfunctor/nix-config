@@ -14,16 +14,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    caelestia = {
-      url = "github:caelestia-dots/shell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     mango = {
       url = "github:DreamMaoMao/mango";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,10 +34,7 @@
       vars = import ./vars.nix;
 
       mangoModules = import ./desktop/mango.nix { inherit inputs pkgs; };
-      swayModules = import ./desktop/sway.nix { inherit inputs pkgs; };
-      gnomeModules = import ./desktop/gnome.nix { inherit inputs pkgs; };
       niriModules = import ./desktop/niri.nix { inherit inputs pkgs; };
-      hyprlandModules = import ./desktop/hyprland.nix { inherit inputs pkgs; };
 
       baseOSModules = [
         ./core/core.nix
@@ -55,6 +42,7 @@
         ./desktop/portal.nix
         ./desktop/apps.nix
         ./desktop/wm.nix
+        ./desktop/dms.nix
 
         home-manager.nixosModules.home-manager
         ./core/homeModule.nix
@@ -75,8 +63,7 @@
           modules = [
             ./core/home.nix
             ./home/wm.nix
-            ./home/dev.nix
-            ./home/gtk.nix
+            ./home/programs.nix
           ]
           ++ homeImports;
           extraSpecialArgs = { inherit inputs vars; };
@@ -85,32 +72,22 @@
       allOSModules = [
         mango.nixosModules.mango
         mangoModules.nixosModule
-        swayModules.nixosModule
         niriModules.nixosModule
-        hyprlandModules.nixosModule
       ];
 
       allHomeModules = [
         mangoModules.homeModule
-        swayModules.homeModule
         niriModules.homeModule
-        hyprlandModules.homeModule
-        gnomeModules.homeModule
-        ./home/gtk.nix
-        ./home/gnome.nix
-        ./home/caelestia.nix
-        ./home/dms.nix
-        ./home/noctalia.nix
       ];
 
       mkMin = config: mkOS [ config ] [ ];
       mkNoHm = config: mkOS ([ config ] ++ allOSModules) [ ];
       mkSway =
-        config: mkOS [ config swayModules.nixosModule ] [ swayModules.homeModule ./home/noctalia.nix ];
-      mkNiri = config: mkOS [ config niriModules.nixosModule ] [ niriModules.homeModule ./home/dms.nix ];
+        config: mkOS [ config swayModules.nixosModule ] [ swayModules.homeModule ];
+      mkNiri = config: mkOS [ config niriModules.nixosModule ] [ niriModules.homeModule ];
       mkHyprland =
         config:
-        mkOS [ config hyprlandModules.nixosModule ] [ hyprlandModules.homeModule ./home/caelestia.nix ];
+        mkOS [ config hyprlandModules.nixosModule ] [ hyprlandModules.homeModule ];
       mkAll = config: mkOS ([ config ] ++ allOSModules) allHomeModules;
       mkGnome = config: mkOS [ config gnomeModules.nixosModule ] [ gnomeModules.homeModule ];
       mkMango =
@@ -121,7 +98,7 @@
             mango.nixosModules.mango
             mangoModules.nixosModule
           ]
-          [ mangoModules.homeModule ./home/noctalia.nix ];
+          [ mangoModules.homeModule ./home/dms.nix ];
     in
     {
       nixosConfigurations = {
@@ -149,16 +126,12 @@
             ]
             [
               mangoModules.homeModule
-              ./home/noctalia.nix
             ];
 
         # only for testing, you need to copy your system configuration
         # for eg: cp  /etc/nixos/* ./nixos/
-        sway = mkSway ./hosts/nixos/configuration.nix;
         niri = mkNiri ./hosts/nixos/configuration.nix;
-        hyprland = mkHyprland ./hosts/nixos/configuration.nix;
         mango = mkMango ./hosts/nixos/configuration.nix;
-        gnome = mkGnome ./hosts/nixos/configuration.nix;
         noHm = mkNoHm ./hosts/nixos/configuration.nix;
         all = mkAll ./hosts/nixos/configuration.nix;
       };
@@ -169,11 +142,8 @@
       }) self.nixosConfigurations;
 
       homeConfigurations = {
-        noctalia = mkHome [ ./home/noctalia.nix ];
         dms = mkHome [ ./home/dms.nix ];
-        caelestia = mkHome [ ./home/caelestia.nix ];
-
-        dmsOnly = home-manager.lib.homeManagerConfiguration {
+        dmsMin = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${system};
           modules = [
             ./core/home.nix

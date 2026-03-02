@@ -58,7 +58,6 @@ with pkgs;
   tree
   tree-sitter
   unzip
-  vscode
   wget
   yazi
   yq

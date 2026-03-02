@@ -100,9 +100,6 @@ binds {
     Mod+D hotkey-overlay-title="Run an Application: dms" { spawn "dms" "ipc" "call" "spotlight" "toggle"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen: dms" { spawn "dms" "ipc" "call" "lock" "lock"; }
 
-    // Mod+D hotkey-overlay-title="Run an Application: noctalia" { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
-    // Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia" { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "lock"; }
-
     Mod+O repeat=false { toggle-overview; }
     Mod+Q repeat=false { close-window; }
 

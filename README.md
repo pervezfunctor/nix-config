@@ -2,8 +2,6 @@
 
 Get this config on your system with the following commands.
 
-**Tip**: Open this README.md in vscode with runme extension installed. You could execute the following commands easily.
-
 ```bash
 nix-shell -p git micro # use your favorite editor instead of micro
 git clone https://github.com/pervezfunctor/nix-config.git
@@ -39,38 +37,13 @@ Create an empty `zsh` rc file.
 touch ~/.zshrc
 ```
 
-Optionally, install the following `vscode` extensions.
-
-```bash
-code --install-extension jnoortheen.nix-ide
-code --install-extension github.github-vscode-theme
-```
-
-Add the following vscode settings(Optional)
-
-```json
-{
-    "workbench.colorTheme": "GitHub Dark Default",
-    "editor.fontFamily": "JetbrainsMono Nerd Font",
-    "editor.fontSize": 14,
-    "nix.enableLanguageServer": true,
-    "nix.formatterPath": "nixfmt",
-    "nix.serverPath": "nixd",
-    "files.trimTrailingWhitespace": true,
-    "editor.tabSize": 2,
-    "editor.detectIndentation": false,
-    "editor.minimap.enabled": false
-}
-```
-
 Reboot your system. Remember  to commit and push your code to a new repository(github/codeberg).
 
 ## Automated setup
 
-To automate the entire setup process, download and run the provided `setup.sh` script:
+To automate the entire setup process, download and run the provided `setup.nu` script:
 
 ```bash
-curl -O https://raw.githubusercontent.com/pervezfunctor/nix-config/main/setup.sh
-chmod +x setup.sh
-./setup.sh
+curl -O https://raw.githubusercontent.com/pervezfunctor/nix-config/main/bin/setup.nu
+nu setup.nu --help
 ```
