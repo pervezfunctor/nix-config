@@ -42,7 +42,6 @@
         ./desktop/portal.nix
         ./desktop/apps.nix
         ./desktop/wm.nix
-        ./desktop/dms.nix
 
         home-manager.nixosModules.home-manager
         ./core/homeModule.nix
@@ -82,14 +81,8 @@
 
       mkMin = config: mkOS [ config ] [ ];
       mkNoHm = config: mkOS ([ config ] ++ allOSModules) [ ];
-      mkSway =
-        config: mkOS [ config swayModules.nixosModule ] [ swayModules.homeModule ];
       mkNiri = config: mkOS [ config niriModules.nixosModule ] [ niriModules.homeModule ];
-      mkHyprland =
-        config:
-        mkOS [ config hyprlandModules.nixosModule ] [ hyprlandModules.homeModule ];
       mkAll = config: mkOS ([ config ] ++ allOSModules) allHomeModules;
-      mkGnome = config: mkOS [ config gnomeModules.nixosModule ] [ gnomeModules.homeModule ];
       mkMango =
         config:
         mkOS
@@ -143,6 +136,7 @@
 
       homeConfigurations = {
         dms = mkHome [ ./home/dms.nix ];
+
         dmsMin = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${system};
           modules = [
