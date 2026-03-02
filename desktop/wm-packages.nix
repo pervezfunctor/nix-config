@@ -51,5 +51,4 @@ with pkgs;
   wl-clipboard
   wlogout
   wlsunset
-  # mako
 ]

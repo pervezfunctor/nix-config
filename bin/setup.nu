@@ -1,18 +1,34 @@
 #!/usr/bin/env nu
 
 const REPO_URL = "https://github.com/pervezfunctor/niri-config.git"
+const REPO_DIR = "~/niri-config"
 
-def repo-dir [] {
-  $"($env.HOME)/niri-config"
+def ensure-nixos [] {
+  if not ("/etc/NIXOS" | path exists) {
+    error make {msg: "This script must run on NixOS."}
+  }
 }
 
-def confirm-prompt [prompt: string] {
-  let answer = (input $prompt | str trim | str downcase)
-  $answer == "y"
+def check-sudo [] {
+  let result = (do -i { sudo -n true } | complete)
+  if $result.exit_code != 0 {
+    print "Warning: sudo access may be required for rebuild."
+  }
+}
+
+def confirm-prompt [prompt: string, --default-yes]: bool {
+  let default = if $default_yes { "Y/n" } else { "y/N" }
+  let answer = (input $"($prompt) [($default)]: " | str trim | str downcase)
+  
+  if ($answer | is-empty) {
+    $default_yes
+  } else {
+    $answer == "y" or $answer == "yes"
+  }
 }
 
 def confirm-overwrite [file: string] {
-  if not (confirm-prompt $"($file) already exists. Overwrite? [y/N]: ") {
+  if not (confirm-prompt $"($file) already exists. Overwrite?") {
     error make {msg: "Aborted."}
   }
 }
@@ -31,7 +47,7 @@ def clone-or-update-repo [repo_dir: string] {
       }
     }
   } else {
-    let result = (do -i { git clone $REPO_URL $repo_dir } | complete)
+    let result = (do -i { ^nix run nixpkgs#git -- clone $REPO_URL $repo_dir } | complete)
     if ($result.exit_code != 0) {
       error make {
         msg: $"Failed to clone repository.\n($result.stderr)"
@@ -51,7 +67,7 @@ def generate-vars [repo_dir: string] {
   let username = (whoami | str trim)
   let homeDirectory = ($env.HOME | str trim)
   let hostname = (hostname | str trim)
-  let vars_file = $"($repo_dir)/vars.nix"
+  let vars_file = [$repo_dir "vars.nix"] | path join
 
   if ($username | is-empty) {
     error make {msg: "Username is empty."}
@@ -95,8 +111,10 @@ def generate-vars [repo_dir: string] {
 def ensure-nixos-files [target_dir: string, hardware_only: bool] {
   if $hardware_only {
     print $"Generating hardware-configuration.nix in ($target_dir)..."
-    let hw_file = $"($target_dir)/hardware-configuration.nix"
-    let result = (do -i { nixos-generate-config --dir $target_dir --show-hardware-config | save -f $hw_file } | complete)
+    let hw_file = [$target_dir "hardware-configuration.nix"] | path join
+    let result = (do -i {
+      nixos-generate-config --show-hardware-config | save -f $hw_file
+    } | complete)
     if ($result.exit_code != 0) {
       error make {
         msg: $"Failed to generate hardware configuration.\n($result.stderr)"
@@ -127,12 +145,12 @@ def add-to-git [repo_dir: string] {
     return
   }
 
-  let vars_file = $"($repo_dir)/vars.nix"
-  let hw_file = $"($repo_dir)/hardware-configuration.nix"
-  let cfg_file = $"($repo_dir)/configuration.nix"
+  let vars_file = [$repo_dir "vars.nix"] | path join
+  let hw_file = [$repo_dir "hardware-configuration.nix"] | path join
+  let cfg_file = [$repo_dir "configuration.nix"] | path join
 
   let result = (do -i {
-    ^nix run nixpkgs#git -- -C $repo_dir add $vars_file $hw_file $cfg_file 2>/dev/null
+    ^nix run nixpkgs#git -- -C $repo_dir add $vars_file $hw_file $cfg_file
   } | complete)
 
   if ($result.exit_code != 0) {
@@ -147,7 +165,7 @@ def add-to-git [repo_dir: string] {
 def prompt-rebuild [repo_dir: string, target: string] {
   print ""
 
-  if (confirm-prompt "Rebuild NixOS system now? [y/N]: ") {
+  if (confirm-prompt "Rebuild NixOS system now?") {
     print $"Running: sudo nixos-rebuild switch --flake ($repo_dir)/#($target)"
     sudo nixos-rebuild switch --flake $"($repo_dir)/#($target)"
 
@@ -199,7 +217,10 @@ def main [
     return
   }
 
-  let repo_dir = (repo-dir)
+  ensure-nixos
+  check-sudo
+
+  let repo_dir = ($REPO_DIR | path expand)
 
   if not $skip_clone {
     clone-or-update-repo $repo_dir

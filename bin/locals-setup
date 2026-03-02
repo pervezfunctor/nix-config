@@ -1,0 +1,17 @@
+#! /usr/bin/env bash
+
+echo "Setting up local configuration files..."
+
+echo "Setting up niri files..."
+mkdir -p ~/.config/niri/dms 2>/dev/null
+touch ~/.config/niri/dms/{colors,cursor,layout,alttab,binds}.kdl
+touch ~/.config/niri/local.kdl
+
+echo "Setting up mango files..."
+mkdir -p ~/.config/mango/dms 2>/dev/null
+touch ~/.config/mango/dms/{colors,cursor,layout,outputs}.conf
+touch ~/.config/mango/local.conf
+
+echo "Setting up kitty files..."
+mkdir -p ~/.config/kitty 2>/dev/null
+touch ~/.config/kitty/local.conf

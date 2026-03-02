@@ -10,8 +10,3 @@
     vulkan-tools
   ];
 }
-
-# On KDE
-# (vivaldi.override {
-#   commandLineArgs = "--password-store=kwallet6";
-# })

@@ -3,6 +3,15 @@
   home.packages = import ../core/dev-packages.nix { inherit pkgs; };
 
   programs = {
+    bash = {
+      enable = true;
+      interactiveShellInit = ''
+         if ! [ "$TERM" = "dumb" ] && [ -z "$BASH_EXECUTION_STRING" ]; then
+           exec nu
+         fi
+       '';
+    };
+
     zsh = {
       enable = true;
       shellAliases = {
@@ -29,21 +38,9 @@
 
         show_banner = false;
       };
-      # shellAliases = { };
-      # environmentVariables = { };
-      # configFile.source = ./config/nu/config.nu;
-      # envFile.source = ./config/nu/env.nu;
-      # extraConfig = '' '';
     };
 
     broot = {
-      enable = true;
-      enableZshIntegration = true;
-      enableBashIntegration = true;
-      enableNushellIntegration = true;
-    };
-
-    atuin = {
       enable = true;
       enableZshIntegration = true;
       enableBashIntegration = true;
@@ -62,13 +59,6 @@
       enableBashIntegration = true;
       enableNushellIntegration = true;
     };
-
-    # yazi = {
-    #   enable = true;
-    #   enableZshIntegration = true;
-    #   enableBashIntegration = true;
-    #   enableNushellIntegration = true;
-    # };
 
     starship = {
       enable = true;
@@ -129,9 +119,3 @@
     };
   };
 }
-
-#  bash.interactiveShellInit = ''
-#       if ! [ "$TERM" = "dumb" ] && [ -z "$BASH_EXECUTION_STRING" ]; then
-#         exec nu
-#       fi
-#     '';
