@@ -39,19 +39,27 @@
       baseOSModules = [
         ./core/core.nix
         ./core/virt.nix
-        ./desktop/portal.nix
         ./desktop/apps.nix
+        ./desktop/portal.nix
         ./desktop/wm.nix
-
         home-manager.nixosModules.home-manager
         ./core/homeModule.nix
       ];
+
+      baseImports = [
+        ./core/home.nix
+        ./home/dms.nix
+        ./home/programs.nix
+      ];
+
       mkOS =
         osModules: homeImports:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit inputs vars homeImports; };
-
+          specialArgs = {
+            inherit inputs vars;
+            homeImports = baseImports ++ homeImports;
+          };
           modules = baseOSModules ++ osModules;
         };
 
@@ -59,11 +67,7 @@
         homeImports:
         home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${system};
-          modules = [
-            ./core/home.nix
-            ./home/wm.nix
-          ]
-          ++ homeImports;
+          modules = baseImports ++ homeImports;
           extraSpecialArgs = { inherit inputs vars; };
         };
 
@@ -90,7 +94,7 @@
             mango.nixosModules.mango
             mangoModules.nixosModule
           ]
-          [ mangoModules.homeModule ./home/dms.nix ];
+          [ mangoModules.homeModule ];
     in
     {
       nixosConfigurations = {
@@ -104,10 +108,7 @@
               niriModules.nixosModule
               ./hosts/niri-nuc-vm/configuration.nix
             ]
-            [
-              niriModules.homeModule
-              ./home/dms.nix
-            ];
+            [ niriModules.homeModule ];
 
         mango-nuc-vm =
           mkOS
@@ -116,9 +117,7 @@
               mangoModules.nixosModule
               ./hosts/mango-nuc-vm/configuration.nix
             ]
-            [
-              mangoModules.homeModule
-            ];
+            [ mangoModules.homeModule ];
 
         # only for testing, you need to copy your system configuration
         # for eg: cp  /etc/nixos/* ./nixos/
