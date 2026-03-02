@@ -62,7 +62,6 @@
           modules = [
             ./core/home.nix
             ./home/wm.nix
-            ./home/programs.nix
           ]
           ++ homeImports;
           extraSpecialArgs = { inherit inputs vars; };

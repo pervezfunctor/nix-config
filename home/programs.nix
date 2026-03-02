@@ -3,15 +3,6 @@
   home.packages = import ../core/dev-packages.nix { inherit pkgs; };
 
   programs = {
-    bash = {
-      enable = true;
-      interactiveShellInit = ''
-         if ! [ "$TERM" = "dumb" ] && [ -z "$BASH_EXECUTION_STRING" ]; then
-           exec nu
-         fi
-       '';
-    };
-
     zsh = {
       enable = true;
       shellAliases = {

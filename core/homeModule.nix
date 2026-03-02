@@ -14,7 +14,7 @@
     users.${vars.username} = {
       imports = [
         ./home.nix
-        ../home/dev.nix
+        ../home/programs.nix
       ]
       ++ homeImports;
     };
