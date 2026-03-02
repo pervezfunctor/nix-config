@@ -16,10 +16,10 @@ def check-sudo [] {
   }
 }
 
-def confirm-prompt [prompt: string, --default-yes]: bool {
+def confirm-prompt [prompt: string, --default-yes]: nothing -> bool {
   let default = if $default_yes { "Y/n" } else { "y/N" }
   let answer = (input $"($prompt) [($default)]: " | str trim | str downcase)
-  
+
   if ($answer | is-empty) {
     $default_yes
   } else {
