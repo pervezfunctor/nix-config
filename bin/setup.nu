@@ -9,13 +9,6 @@ def ensure-nixos [] {
   }
 }
 
-def check-sudo [] {
-  let result = (do -i { sudo -n true } | complete)
-  if $result.exit_code != 0 {
-    print "Warning: sudo access may be required for rebuild."
-  }
-}
-
 def confirm-prompt [prompt: string, --default-yes]: nothing -> bool {
   let default = if $default_yes { "Y/n" } else { "y/N" }
   let answer = (input $"($prompt) [($default)]: " | str trim | str downcase)
@@ -38,21 +31,9 @@ def clone-or-update-repo [repo_dir: string] {
 
   if ($repo_dir | path exists) {
     print "Repository directory exists. Pulling latest changes..."
-    let result = (do -i {
-      ^nix run nixpkgs#git -- -C $repo_dir pull
-    } | complete)
-    if ($result.exit_code != 0) {
-      error make {
-        msg: $"Failed to pull latest changes.\n($result.stderr)"
-      }
-    }
+    ^nix run nixpkgs#git -- -C $repo_dir pull
   } else {
-    let result = (do -i { ^nix run nixpkgs#git -- clone $REPO_URL $repo_dir } | complete)
-    if ($result.exit_code != 0) {
-      error make {
-        msg: $"Failed to clone repository.\n($result.stderr)"
-      }
-    }
+    ^nix run nixpkgs#git -- clone $REPO_URL $repo_dir
     if not ($repo_dir | path exists) {
       error make {
         msg: $"Clone succeeded but directory not found: ($repo_dir)"
@@ -95,16 +76,7 @@ def generate-vars [repo_dir: string] {
 }
 "
 
-  let result = (do -i {
-    $nix_content | save -f $vars_file
-  } | complete)
-
-  if ($result.exit_code != 0) {
-    error make {
-      msg: $"Failed to write ($vars_file).\n($result.stderr)"
-    }
-  }
-
+  $nix_content | save -f $vars_file
   print $"Generated ($vars_file): username=($username), home=($homeDirectory), hostname=($hostname)"
 }
 
@@ -112,52 +84,23 @@ def ensure-nixos-files [target_dir: string, hardware_only: bool] {
   if $hardware_only {
     print $"Generating hardware-configuration.nix in ($target_dir)..."
     let hw_file = [$target_dir "hardware-configuration.nix"] | path join
-    let result = (do -i {
-      nixos-generate-config --show-hardware-config | save -f $hw_file
-    } | complete)
-    if ($result.exit_code != 0) {
-      error make {
-        msg: $"Failed to generate hardware configuration.\n($result.stderr)"
-      }
-    }
+    ^nixos-generate-config --show-hardware-config | save -f $hw_file
     print $"Generated ($hw_file) (hardware-only mode)"
   } else {
     print $"Regenerating NixOS configuration files in ($target_dir)..."
-    let result = (do -i { nixos-generate-config --dir $target_dir } | complete)
-    if ($result.exit_code != 0) {
-      error make {
-        msg: $"Failed to generate NixOS configuration.\n($result.stderr)"
-      }
-    }
+    ^nixos-generate-config --dir $target_dir
   }
 }
 
 def add-to-git [repo_dir: string] {
   print ""
   print "Adding generated files to git..."
-
-  let is_repo = (do -i {
-    ^nix run nixpkgs#git -- -C $repo_dir rev-parse --git-dir
-  } | complete | get exit_code) == 0
-
-  if not $is_repo {
-    print "Not in a git repository. Skipping git operations."
-    return
-  }
+  ^nix run nixpkgs#git -- -C $repo_dir rev-parse --git-dir
 
   let vars_file = [$repo_dir "vars.nix"] | path join
   let hw_file = [$repo_dir "hardware-configuration.nix"] | path join
   let cfg_file = [$repo_dir "configuration.nix"] | path join
-
-  let result = (do -i {
-    ^nix run nixpkgs#git -- -C $repo_dir add $vars_file $hw_file $cfg_file
-  } | complete)
-
-  if ($result.exit_code != 0) {
-    error make {
-      msg: $"Failed to add files to git.\n($result.stderr)"
-    }
-  }
+  ^nix run nixpkgs#git -- -C $repo_dir add $vars_file $hw_file $cfg_file
 
   print "Files added to git. Review with: git status"
 }
@@ -167,14 +110,7 @@ def prompt-rebuild [repo_dir: string, target: string] {
 
   if (confirm-prompt "Rebuild NixOS system now?") {
     print $"Running: sudo nixos-rebuild switch --flake ($repo_dir)/#($target)"
-    sudo nixos-rebuild switch --flake $"($repo_dir)/#($target)"
-
-    if ($env.LAST_EXIT_CODE? | default 0) != 0 {
-      error make {
-        msg: $"Failed to rebuild NixOS system"
-      }
-    }
-
+    ^sudo nixos-rebuild switch --flake $"($repo_dir)/#($target)"
     print "NixOS system rebuilt successfully."
   } else {
     print "Skipped rebuild. Run manually later:"
@@ -218,7 +154,6 @@ def main [
   }
 
   ensure-nixos
-  check-sudo
 
   let repo_dir = ($REPO_DIR | path expand)
 
