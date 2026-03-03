@@ -122,8 +122,6 @@ in
     udisks2
     udiskie
     wl-clipboard
-    libxcb
-    libxcb-wm
     adwaita-fonts
     adwaita-icon-theme
   ];

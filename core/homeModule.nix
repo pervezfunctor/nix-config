@@ -12,11 +12,7 @@
     extraSpecialArgs = { inherit vars inputs; };
 
     users.${vars.username} = {
-      imports = [
-        ./home.nix
-        ../home/programs.nix
-      ]
-      ++ homeImports;
+      imports = [ ./home.nix ] ++ homeImports;
     };
   };
 }

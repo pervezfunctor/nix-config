@@ -46,7 +46,10 @@
         ./core/homeModule.nix
       ];
 
-      baseImports = [ ./home/dms.nix ];
+      baseImports = [
+        ./home/programs.nix
+        ./home/dms.nix
+      ];
 
       mkOS =
         osModules: homeImports:

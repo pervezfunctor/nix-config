@@ -33,67 +33,70 @@
 
     zoxide = {
       enable = true;
-      enableZshIntegration = true;
       enableBashIntegration = true;
+      enableFishIntegration = true;
       enableNushellIntegration = true;
+      enableZshIntegration = true;
     };
 
     starship = {
       enable = true;
-      enableZshIntegration = true;
       enableBashIntegration = true;
       enableNushellIntegration = true;
+      enableZshIntegration = true;
     };
 
     nix-index = {
       enable = true;
-      enableZshIntegration = true;
       enableBashIntegration = true;
+      enableFishIntegration = true;
       enableNushellIntegration = true;
+      enableZshIntegration = true;
     };
 
     mise = {
       enable = true;
-      enableZshIntegration = true;
       enableBashIntegration = true;
       enableNushellIntegration = true;
+      enableZshIntegration = true;
     };
 
     lazygit = {
       enable = true;
-      enableZshIntegration = true;
       enableBashIntegration = true;
       enableNushellIntegration = true;
-    };
-
-    keychain = {
-      enable = true;
-      keys = [ "id_ed25519" ];
       enableZshIntegration = true;
-      enableBashIntegration = true;
-      enableNushellIntegration = true;
     };
 
     eza = {
       enable = true;
-      enableZshIntegration = true;
       enableBashIntegration = true;
       enableNushellIntegration = true;
+      enableZshIntegration = true;
     };
 
     carapace = {
       enable = true;
-      enableZshIntegration = true;
       enableBashIntegration = true;
       enableNushellIntegration = true;
+      enableZshIntegration = true;
     };
 
     direnv = {
       enable = true;
-      enableBashIntegration = true;
-      enableZshIntegration = true;
-      enableNushellIntegration = true;
       nix-direnv.enable = true;
+      enableBashIntegration = true;
+      enableFishIntegration = true;
+      enableNushellIntegration = true;
+      enableZshIntegration = true;
     };
+
+    # keychain = {
+    #   enable = true;
+    #   keys = [ "id_ed25519" ];
+    #   enableBashIntegration = true;
+    #   enableNushellIntegration = true;
+    #   enableZshIntegration = true;
+    # };
   };
 }

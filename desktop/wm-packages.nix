@@ -13,7 +13,6 @@ with pkgs;
   ffmpegthumbnailer
   fira-code
   fira-sans
-  fish
   flameshot
   font-awesome
   gnome-themes-extra
@@ -22,7 +21,7 @@ with pkgs;
   imagemagick
   imv
   inter
-  libcava
+  cava
   libnotify
   libqalculate
   libsForQt5.qt5ct
@@ -31,7 +30,6 @@ with pkgs;
   matugen
   mpv
   nautilus
-  nerd-fonts.caskaydia-cove
   nwg-displays
   nwg-look
   pamixer
