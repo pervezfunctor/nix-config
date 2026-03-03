@@ -36,7 +36,7 @@
       mangoModules = import ./desktop/mango.nix { inherit inputs pkgs; };
       niriModules = import ./desktop/niri.nix { inherit inputs pkgs; };
 
-      baseOSModules = [
+      baseModules = [
         ./core/core.nix
         ./core/virt.nix
         ./desktop/apps.nix
@@ -46,11 +46,7 @@
         ./core/homeModule.nix
       ];
 
-      baseImports = [
-        ./core/home.nix
-        ./home/dms.nix
-        ./home/programs.nix
-      ];
+      baseImports = [ ./home/dms.nix ];
 
       mkOS =
         osModules: homeImports:
@@ -60,7 +56,7 @@
             inherit inputs vars;
             homeImports = baseImports ++ homeImports;
           };
-          modules = baseOSModules ++ osModules;
+          modules = baseModules ++ osModules;
         };
 
       mkHome =

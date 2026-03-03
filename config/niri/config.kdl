@@ -16,7 +16,6 @@ input {
         numlock
     }
 
-    focus-follows-mouse
     workspace-auto-back-and-forth
 }
 
@@ -276,18 +275,10 @@ environment {
   QT_QPA_PLATFORMTHEME "qt6ct"
 }
 
-debug {
-  // Allows notification actions and window activation from Noctalia.
-  honor-xdg-activation-with-invalid-serial
-}
-
-// spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=niri"
+spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=niri"
 spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets,ssh,pkcs11"
 spawn-sh-at-startup "wl-paste --watch cliphist store"
 spawn-sh-at-startup "~/nix-config/scripts/idle"
-
-include "local.kdl"
-
 spawn-sh-at-startup "dms run"
 
 include "dms/colors.kdl"

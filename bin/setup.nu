@@ -178,4 +178,6 @@ def main [
   if not $skip_rebuild {
     prompt-rebuild $repo_dir $target
   }
+
+  nu $"($REPO_DIR)/bin/locals-setup.nu"S
 }

@@ -23,18 +23,18 @@ Copy a section for nixos config like nuc-vm and modify it as you need it. For ex
 "<your-host-name>" = mkOS [ ./hosts/<your-host-name>/configuration.nix ] [];
 ```
 
-Now execute the following commands.
+You have to create some config files for niri/mango. Execute the following script
+
+```bash
+nix run nixpkgs#nushell ~/nix-config/bin/locals-setup.nu
+```
+
+Now execute the following commands, to rebuild your system.
 
 ```bash
 git init
 git add .
 sudo nixos-rebuild switch --flake .#
-```
-
-Create an empty `zsh` rc file.
-
-```bash
-touch ~/.zshrc
 ```
 
 Reboot your system. Remember  to commit and push your code to a new repository(github/codeberg).
