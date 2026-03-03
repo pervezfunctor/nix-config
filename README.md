@@ -41,9 +41,10 @@ Reboot your system. Remember  to commit and push your code to a new repository(g
 
 ## Automated setup
 
-To automate the entire setup process, download and run the provided `setup.nu` script:
+To automate the above setup process, download and run the provided `setup.nu` script:
 
 ```bash
-curl -O https://raw.githubusercontent.com/pervezfunctor/nix-config/main/bin/setup.nu
-nu setup.nu --help
+curl -O https://raw.githubusercontent.com/pervezfunctor/nix-config/refs/heads/main/bin/setup.nu
+nix run nixpkgs#nushell -- ./setup.nu
+rm -f ./setup.nu
 ```
