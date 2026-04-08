@@ -45,7 +45,7 @@ with pkgs;
   slurp
   smartmontools
   swappy
-  swww
+  awww
   waypaper
   wl-clip-persist
   wl-clipboard
