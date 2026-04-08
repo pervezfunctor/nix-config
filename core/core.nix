@@ -10,8 +10,11 @@ let
   };
 in
 {
-  # hardware.graphics.enable = true;
-  # services.smartd.enable = true;
+  hardware.graphics = {
+    enable = true;
+  };
+
+  services.smartd.enable = true;
   hardware.enableRedistributableFirmware = true;
   hardware.bluetooth.enable = true;
 
@@ -126,5 +129,8 @@ in
     libxcb-wm
     adwaita-fonts
     adwaita-icon-theme
+    vulkan-tools
+    vulkan-loader
+    vulkan-validation-layers
   ];
 }
