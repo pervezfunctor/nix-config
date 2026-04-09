@@ -15,14 +15,17 @@
   programs.virt-manager.enable = true;
 
   environment.systemPackages = with pkgs; [
+    distrobox
+    dive
     dnsmasq
     guestfs-tools
-    libguestfs
-    virt-manager
-    dive
     lazydocker
+    libguestfs
+    libosinfo
+    virglrenderer
+    virt-manager
+    virtiofsd
     xorriso
-    distrobox
   ];
 
   virtualisation.docker = {
