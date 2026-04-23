@@ -1,31 +1,39 @@
 ## Manual Installation
 
-Get this config on your system with the following commands.
+Get this config on your system with the following commands(manual).
 
-**Tip**: Open this README.md in vscode with runme extension installed. You could execute the following commands easily.
+First start a nix shell with and your favourite editor
+```bash
+nix-shell -p git micro
+```
+
+Then clone this repository.
 
 ```bash
-nix-shell -p git micro # use your favorite editor instead of micro
 git clone https://github.com/pervezfunctor/nix-config.git
 ```
 
-Exit nix-shell with Ctrl+D. Execute the following comands.
+Copy your current system configuration.
 
 ```bash
 cd nix-config
 rm -rf .git
 mkdir -p hosts/$(hostname)
 cp /etc/nixos/* hosts/$(hostname)/
+```
+Open `flake.nix` in your favourite editor.
+
+```bash
 micro flake.nix
 ```
 
-Copy a section for nixos config like nuc-vm and modify it as you need it. For example minimal configuiration would be the following(You could get your hostname with `hostname` command).
+Copy a section for nixos config like nuc-vm and modify it as you need it. For example minimal configuiration would be the following(You could get your hostname with `hostname` or `hostnamectl hostname` command).
 
 ```nix
 "<your-host-name>" = mkOS [ ./hosts/<your-host-name>/configuration.nix ] [];
 ```
 
-Now execute the following commands.
+Add your files to `git stash` and rebuild your nixos with the new configuration. If something fails, remember that your previous build is always available through your bootloader.
 
 ```bash
 git init
@@ -39,14 +47,14 @@ Create an empty `zsh` rc file.
 touch ~/.zshrc
 ```
 
-Optionally, install the following `vscode` extensions.
+Install `vscode` extensions.
 
 ```bash
 code --install-extension jnoortheen.nix-ide
 code --install-extension github.github-vscode-theme
 ```
 
-Add the following vscode settings(Optional)
+Use following vscode settings.
 
 ```json
 {
