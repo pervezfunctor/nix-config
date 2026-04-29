@@ -28,7 +28,6 @@ with pkgs;
   lm_sensors
   material-symbols
   matugen
-  mpv
   nautilus
   nwg-displays
   nwg-look
@@ -42,7 +41,7 @@ with pkgs;
   slurp
   smartmontools
   swappy
-  swww
+  awww
   waypaper
   wl-clip-persist
   wl-clipboard
