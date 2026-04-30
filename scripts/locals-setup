@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 touch ~/.config/hypr/local.conf
 touch ~/.config/kitty/local.conf
 touch ~/.config/mango/local.conf
