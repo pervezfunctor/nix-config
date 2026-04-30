@@ -29,7 +29,6 @@ with pkgs;
   lm_sensors
   material-symbols
   matugen
-  mpv
   nautilus
   nerd-fonts.caskaydia-cove
   nwg-displays
