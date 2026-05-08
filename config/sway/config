@@ -21,6 +21,8 @@ set $right l
 
 set $term kitty
 
+setenv QT_QPA_PLATFORMTHEME qt6ct
+
 set $menu noctalia-shell ipc call launcher toggle
 
 
