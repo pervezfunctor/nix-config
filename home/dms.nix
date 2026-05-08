@@ -11,9 +11,9 @@
     enableSystemMonitoring = true;
     enableDynamicTheming = true;
 
-    systemd = {
-      enable = false;
-      restartIfChanged = true;
-    };
+    # systemd = {
+    #   enable = false;
+    #   restartIfChanged = true;
+    # };
   };
 }
