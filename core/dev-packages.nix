@@ -6,8 +6,10 @@ with pkgs;
   antigravity
   bat
   bitwarden-cli
+  boost
   bottom
-  claude-code
+  clang-tools
+  cmake
   curl
   delta
   devbox
@@ -34,8 +36,10 @@ with pkgs;
   luarocks
   mermaid-cli
   nerd-fonts.jetbrains-mono
+  nerd-fonts.monaspace
   newt
   nil
+  ninja
   nixd
   nixfmt
   nodejs
@@ -44,6 +48,7 @@ with pkgs;
   openssl
   p7zip
   passt
+  pkg-config
   procs
   ptyxis
   python3
@@ -65,5 +70,10 @@ with pkgs;
   yazi
   yq
   zed-editor
+  zip
   zoxide
+  # boost
+  # catch2_3
+  # clang
+  # gsl-lite
 ]

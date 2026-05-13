@@ -76,7 +76,7 @@ in
     binfmt = true;
   };
 
-  users.defaultUserShell = pkgs.zsh;
+  users.defaultUserShell = pkgs.fish;
   programs.zsh = {
     enable = true;
     autosuggestions.enable = true;
