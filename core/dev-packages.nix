@@ -13,6 +13,7 @@ with pkgs;
   devbox
   devenv
   distrobox
+  entr
   eza
   fd
   file
@@ -59,6 +60,7 @@ with pkgs;
   tree-sitter
   unzip
   vscode
+  watchexec
   wget
   yazi
   yq
