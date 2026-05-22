@@ -152,7 +152,7 @@ setup_host_directory() {
       cp "/etc/nixos/hardware-configuration.nix" "$host_dir/"
       log "NixOS configuration copied to $host_dir"
     else
-      warn "/etc/nixos not found, skipping config copy"
+      die "/etc/nixos not found, skipping config copy"
     fi
   fi
 
