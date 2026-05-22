@@ -26,6 +26,7 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  services.smartd.enable = true;
   services.openssh.enable = true;
   security.rtkit.enable = true;
   services.displayManager.gdm.enable = true;
