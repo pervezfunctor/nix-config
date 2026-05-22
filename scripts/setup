@@ -165,9 +165,21 @@ setup_host_directory() {
 
 rebuild_nixos() {
   log_step "Step 4: Rebuilding NixOS configuration..."
-  echo "This requires sudo privileges and may take a while..."
 
-  if ! sudo nixos-rebuild switch --flake .#; then
+  if ! nix eval ".#nixosConfigurations.${HOSTNAME}" &>/dev/null; then
+    warn "No '${HOSTNAME}' entry in flake.nix nixosConfigurations"
+    echo "Add this to flake.nix:"
+    echo "  ${HOSTNAME} = mkMin ./hosts/${HOSTNAME}/configuration.nix;"
+    echo "Then run: sudo nixos-rebuild switch --flake .#${HOSTNAME}"
+    return 0
+  fi
+
+  echo "This requires sudo privileges and may take a while..."
+  read -p "Rebuild NixOS with '--flake .#${HOSTNAME}'? (y/N) " -n 1 -r
+  echo
+  [[ ! $REPLY =~ ^[Yy]$ ]] && { log "Skipping rebuild"; return 0; }
+
+  if ! sudo nixos-rebuild switch --flake ".#${HOSTNAME}"; then
     die "NixOS rebuild failed"
   fi
 
