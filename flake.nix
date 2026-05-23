@@ -51,7 +51,6 @@
 
       baseOSModules = [
         ./core/core.nix
-        ./core/virt.nix
         ./desktop/portal.nix
         ./desktop/apps.nix
         ./desktop/wm.nix
@@ -126,8 +125,18 @@
     {
       nixosConfigurations = {
         nixos = mkMin ./hosts/nixos/configuration.nix;
+        libvirt-vm =
+          mkOS
+            [ ./hosts/libvirt-vm/configuration.nix gnomeModules.nixosModule ]
+            [ gnomeModules.homeModule ];
 
-        bd795 = mkAll ./hosts/bd795/configuration.nix;
+        bd795 = mkOS (
+          [
+            ./hosts/bd795/configuration.nix
+            ./core/virt.nix
+          ]
+          ++ allOSModules
+        ) allHomeModules;
 
         niri-nuc-vm =
           mkOS

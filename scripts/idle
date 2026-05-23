@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-IDLE_SCRIPTS_DIR="${HOME}/nix-config/scripts"
+IDLE_SCRIPTS_DIR="${HOME}/.nix-config/scripts"
 SUSPEND_ENABLED=true
 
 LOCK_TIME=180

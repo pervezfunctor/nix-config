@@ -79,7 +79,7 @@ print_help() {
   echo "  4. Rebuilding NixOS with the new configuration"
 }
 
-NIX_CONFIG_DIR="${HOME}/nix-config"
+NIX_CONFIG_DIR="${HOME}/.nix-config"
 
 clone_repository() {
   log_step "Step 1: Cloning nix-config repository..."
@@ -106,7 +106,7 @@ check_prerequisites() {
   log_step "Checking prerequisites..."
 
   if [ ! -f "flake.nix" ]; then
-    die "flake.nix not found. Please run this script from the nix-config root directory."
+    die "flake.nix not found. Please run this script from the ~/.nix-config root directory."
   fi
 
   if ! has_cmd nixos-rebuild; then
@@ -177,7 +177,10 @@ rebuild_nixos() {
   echo "This requires sudo privileges and may take a while..."
   read -p "Rebuild NixOS with '--flake .#${HOSTNAME}'? (y/N) " -n 1 -r
   echo
-  [[ ! $REPLY =~ ^[Yy]$ ]] && { log "Skipping rebuild"; return 0; }
+  [[ ! $REPLY =~ ^[Yy]$ ]] && {
+    log "Skipping rebuild"
+    return 0
+  }
 
   if ! sudo nixos-rebuild switch --flake ".#${HOSTNAME}"; then
     die "NixOS rebuild failed"
@@ -193,6 +196,17 @@ main() {
   check_prerequisites
   generate_vars
   setup_host_directory
+
+  log_step "Step 4: Labeling boot partition..."
+  read -p "Label /dev/vda1 as BOOT for by-label disk references? (y/N) " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    sudo fatlabel /dev/vda1 BOOT
+    log "Boot partition labeled"
+  else
+    warn "Skipping boot partition labeling"
+  fi
+
   rebuild_nixos
 
   echo ""

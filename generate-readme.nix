@@ -14,13 +14,13 @@ in
 
   \`\`\`bash
   nix-shell -p git micro # use your favorite editor instead of micro
-  git clone https://github.com/pervezfunctor/nix-config.git
+  git clone https://github.com/pervezfunctor/nix-config.git ~/.nix-config
   \`\`\`
 
   Exit nix-shell with Ctrl+D. Execute the following commands.
 
   \`\`\`bash
-  cd nix-config
+  cd ~/.nix-config
   rm -rf .git
   mkdir -p hosts/$(hostname)
   cp /etc/nixos/* hosts/$(hostname)/
@@ -64,11 +64,11 @@ in
 
   ## Automated setup
 
-  To automate the entire setup process, download and run the provided `setup.sh` script:
+  To automate the entire setup process, download and run the provided `setup.nu` script:
 
   \`\`\`bash
-  curl -O https://raw.githubusercontent.com/pervezfunctor/nix-config/main/setup.sh
-  chmod +x setup.sh
-  ./setup.sh
+  curl -O https://raw.githubusercontent.com/pervezfunctor/nix-config/main/scripts/setup.nu
+  chmod +x setup.nu
+  nu setup.nu
   \`\`\`
 ''

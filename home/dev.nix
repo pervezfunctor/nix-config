@@ -6,7 +6,7 @@
     zsh = {
       enable = true;
       shellAliases = {
-        update-os = "sudo nixos-rebuild switch --flake ~/nix-config\#";
+        update-os = "sudo nixos-rebuild switch --flake ~/.nix-config\#";
       };
     };
 
