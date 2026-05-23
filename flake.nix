@@ -125,7 +125,7 @@
     {
       nixosConfigurations = {
         nixos = mkMin ./hosts/nixos/configuration.nix;
-        libvirt-vm =
+        gnome-libvirt-vm =
           mkOS
             [ ./hosts/libvirt-vm/configuration.nix gnomeModules.nixosModule ]
             [ gnomeModules.homeModule ];
