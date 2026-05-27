@@ -2,14 +2,13 @@
 
 with pkgs;
 [
-  act
-  antigravity
+  antigravity-fhs
+  google-authenticator
   bat
   bitwarden-cli
-  boost
   bottom
   clang-tools
-  cmake
+  claude-code
   curl
   delta
   devbox
@@ -20,13 +19,10 @@ with pkgs;
   fd
   file
   fzf
-  gcc
   gdu
-  gemini-cli
   gh
   ghostscript
   git
-  gnumake
   htop
   imagemagick
   jq
@@ -39,10 +35,8 @@ with pkgs;
   nerd-fonts.monaspace
   newt
   nil
-  ninja
   nixd
   nixfmt
-  nodejs
   nushell
   opencode
   openssl
@@ -51,12 +45,9 @@ with pkgs;
   pkg-config
   procs
   ptyxis
-  python3
   ripgrep
-  runme
   shellcheck
   shfmt
-  stow
   tealdeer
   tectonic
   tmux
@@ -64,7 +55,6 @@ with pkgs;
   tree
   tree-sitter
   unzip
-  vscode
   watchexec
   wget
   yazi
@@ -72,6 +62,15 @@ with pkgs;
   zed-editor
   zip
   zoxide
+
+  # cmake
+  # gcc
+  # ninja
+  # nodejs
+  # python3
+  # gnumake
+  # runme
+  # act
   # boost
   # catch2_3
   # clang
