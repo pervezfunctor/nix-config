@@ -30,7 +30,7 @@ output "HDMI-A-1" {
   off
 
   mode "3840x2160@60.000"
-  scale 2
+  scale 1.5
   transform "normal"
   position x=0 y=0
 }
@@ -39,14 +39,14 @@ output "DP-1" {
   off
 
   mode "3840x2160@60.000"
-  scale 2
+  scale 1.5
   transform "normal"
   position x=0 y=0
 }
 
 layout {
   gaps 12
-  border { width 0 }
+  border { width 0; }
 
   center-focused-column "never"
   always-center-single-column
