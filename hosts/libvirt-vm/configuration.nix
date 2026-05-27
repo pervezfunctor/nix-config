@@ -1,16 +1,16 @@
-{ pkgs, ... }:
+{ pkgs, vars, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
   ];
 
+  networking.hostName = vars.hostname;
   hardware.graphics.enable = true;
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "gnome-libvirt-vm";
   networking.networkmanager.enable = true;
   time.timeZone = "Asia/Kolkata";
   i18n.defaultLocale = "en_US.UTF-8";

@@ -7,16 +7,13 @@
     };
 
     environment.systemPackages = with pkgs; [
+      accountsservice
+      alacritty
+      cups-pk-helper
       fuzzel
-      swayidle
+      # swayidle
     ];
-
   };
-
-  # environment.sessionVariables = {
-  #   XDG_CURRENT_DESKTOP = "niri";
-  #   XDG_SESSION_TYPE = "wayland";
-  # };
 
   homeModule = {
     home.file = {

@@ -17,14 +17,28 @@ input {
     workspace-auto-back-and-forth
 }
 
-// You can configure outputs by their name, which you can find
-// by running `niri msg outputs` while inside a niri instance.
-// The built-in laptop monitor is usually called "eDP-1".
-// Find more information on the wiki:
-/-output "eDP-1" {
+output "Virtual-1" {
     // off
 
-    mode "1920x1080@120.030"
+    mode "3840x2160@60.000"
+    scale 2
+    transform "normal"
+    position x=0 y=0
+}
+
+output "HDMI-A-1" {
+    off
+
+    mode "3840x2160@60.000"
+    scale 2
+    transform "normal"
+    position x=0 y=0
+}
+
+output "DP-1" {
+    off
+
+    mode "3840x2160@60.000"
     scale 2
     transform "normal"
     position x=0 y=0
@@ -321,9 +335,9 @@ spawn-sh-at-startup "wl-paste --watch cliphist store"
 // spawn-sh-at-startup "dms run"
 spawn-sh-at-startup "systemctl --user start dms"
 
-include "dms/colors.kdl"
-include "dms/cursor.kdl"
-include "dms/layout.kdl"
-include "dms/alttab.kdl"
-include "dms/binds.kdl"
-include "local.kdl"
+include optional=true "dms/colors.kdl"
+include optional=true "dms/cursor.kdl"
+include optional=true "dms/layout.kdl"
+include optional=true "dms/alttab.kdl"
+include optional=true "dms/binds.kdl"
+include optional=true "local.kdl"

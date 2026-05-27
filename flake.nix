@@ -125,10 +125,26 @@
     {
       nixosConfigurations = {
         nixos = mkMin ./hosts/nixos/configuration.nix;
+
         gnome-libvirt-vm =
           mkOS
-            [ ./hosts/libvirt-vm/configuration.nix gnomeModules.nixosModule ]
+            [
+              ./hosts/libvirt-vm/configuration.nix
+              gnomeModules.nixosModule
+            ]
             [ gnomeModules.homeModule ];
+
+        niri-libvirt-vm =
+          mkOS
+            [
+              ./hosts/libvirt-vm/configuration.nix
+              ./desktop/niri-greetd.nix
+              niriModules.nixosModule
+            ]
+            [
+              niriModules.homeModule
+              ./home/dms.nix
+            ];
 
         bd795 = mkOS (
           [
