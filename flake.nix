@@ -146,13 +146,30 @@
               ./home/dms.nix
             ];
 
-        bd795 = mkOS (
+        bd795 = mkOS
           [
             ./hosts/bd795/configuration.nix
+            # ./desktop/niri-greetd.nix
             ./core/virt.nix
+            mango.nixosModules.mango
+            mangoModules.nixosModule
+            gnomeModules.nixosModule
+            swayModules.nixosModule
+            niriModules.nixosModule
+            hyprlandModules.nixosModule
           ]
-          ++ allOSModules
-        ) allHomeModules;
+          [
+            mangoModules.homeModule
+            swayModules.homeModule
+            niriModules.homeModule
+            hyprlandModules.homeModule
+            ./home/gtk.nix
+            ./home/gnome.nix
+            ./home/caelestia.nix
+            ./home/dms.nix
+            ./home/noctalia.nix
+
+          ];
 
         niri-nuc-vm =
           mkOS
