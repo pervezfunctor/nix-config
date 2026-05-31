@@ -7,7 +7,9 @@ let
   '';
 
   shellAliases = {
+    update-os = "sudo nixos-rebuild switch --flake ~/.nix-config\#";
     nrs = "update-os";
+    zed = "zeditor";
 
     gs = "git stash";
     gp = "git push";

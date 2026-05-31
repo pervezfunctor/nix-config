@@ -3,7 +3,7 @@
 {
   home.username = vars.username;
   home.homeDirectory = vars.homeDirectory;
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.05";
 
   home.pointerCursor = {
     # gtk.enable = true;
