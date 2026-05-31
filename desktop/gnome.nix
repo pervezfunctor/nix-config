@@ -42,6 +42,7 @@
           user-themes.extensionUuid
           windownavigator.extensionUuid
           just-perfection.extensionUuid
+          blur-my-shell.extensionUuid
         ];
       };
 
@@ -50,11 +51,8 @@
       };
 
       "org/gnome/desktop/interface" = {
-        gtk-theme = "adw-gtk3";
-        color-scheme = "prefer-dark";
-        accent-color = "green";
-        gtk-key-theme = "Emacs";
-        monospace-font-name = "JetbrainsMono Nerd Font 11";
+        accent-color = "blue";
+        font-antialiasing = "rgba";
       };
 
       "org/gnome/desktop/wm/preferences" = {
@@ -91,6 +89,12 @@
         use-system-font = false;
         interface-style = "system";
         font-name = "JetBrainsMono Nerd Font 11";
+        default-profile-uuid = "4d1e6d22-4b5a-4f8e-9c1a-2b3c4d5e6f7a";
+      };
+
+      "org/gnome/Ptyxis/Profiles/4d1e6d22-4b5a-4f8e-9c1a-2b3c4d5e6f7a" = {
+        opacity = 0.85;
+        palette = "Catppuccin Mocha";
       };
 
       "org/gnome/settings-daemon/plugins/media-keys" = {
@@ -138,6 +142,16 @@
         horizontal-margin = 12;
         vertical-margin = 12;
         vertical-margin-bottom = 12;
+        winprops = [
+          "{\"wm_class\":\"dev.zed.Zed\",\"preferredWidth\":\"67%\"}"
+          "{\"wm_class\":\"org.gnome.Ptyxis\",\"preferredWidth\":\"33%\"}"
+          "{\"wm_class\":\"vicinae\",\"scratch_layer\":true}"
+          "{\"wm_class\":\"*\",\"preferredWidth\":\"50%\"}"
+        ];
+      };
+
+      "org/gnome/desktop/screensaver" = {
+        restart-enabled = true;
       };
 
       "org/gnome/shell/extensions/paperwm/keybindings" = {
