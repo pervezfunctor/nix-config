@@ -85,7 +85,7 @@ def test-generate-vars-fresh [] {
   print "  generate-vars (fresh directory)..."
   let temp = (mktemp -d)
 
-  let r = (run $"generate-vars '($temp)'")
+  let r = (run $"main vars '($temp)'")
   if $r.exit_code != 0 { error make {msg: $"failed: ($r.stderr)"}}
 
   let vars = $"($temp)/vars.nix"

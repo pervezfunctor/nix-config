@@ -19,7 +19,7 @@ def warn [msg: string] {
 }
 
 def error [msg: string] {
-  print $"(ansi red)✗ ($msg)(ansi reset)"
+  print -e $"(ansi red)✗ ($msg)(ansi reset)"
 }
 
 def log-step [msg: string] {
@@ -42,7 +42,7 @@ def confirm-overwrite [file: string] {
   }
 }
 
-def clone-or-update-repo [repo_dir: string] {
+def "main dotfiles" [repo_dir: string] {
   log-step "Step 1: Cloning nix-config repository..."
 
   if ($repo_dir | path exists) and ($"($repo_dir)/.git" | path exists) {
@@ -90,7 +90,7 @@ def check-prerequisites [repo_dir: string] {
   log ("Prerequisites check passed (hostname: " + $hostname + ")")
 }
 
-def generate-vars [repo_dir: string] {
+def "main vars" [repo_dir: string] {
   log-step "Step 2: Generating vars.nix..."
 
   let username = (whoami | str trim)
@@ -137,9 +137,16 @@ def setup-host-directory [repo_dir: string, target: string, hardware_only: bool]
     log $"Created host directory: ($host_dir)"
 
     if ("/etc/nixos" | path exists) {
-      cp "/etc/nixos/configuration.nix" $"($host_dir)/"
-      cp "/etc/nixos/hardware-configuration.nix" $"($host_dir)/"
-      log "Copied NixOS configuration from /etc/nixos"
+      if ("/etc/nixos/configuration.nix" | path exists) {
+        cp "/etc/nixos/configuration.nix" $"($host_dir)/"
+      } else {
+        warn "/etc/nixos/configuration.nix not found, skipping"
+      }
+      if ("/etc/nixos/hardware-configuration.nix" | path exists) {
+        cp "/etc/nixos/hardware-configuration.nix" $"($host_dir)/"
+      } else {
+        warn "/etc/nixos/hardware-configuration.nix not found, skipping"
+      }
     }
   }
 
@@ -203,19 +210,25 @@ def add-to-git [repo_dir: string, target: string] {
 def label-boot-partition [] {
   log-step "Step 4: Labeling boot partition..."
 
-  if (confirm-prompt "Label /dev/vda1 as BOOT for by-label disk references? [y/N]: ") {
-    let result = (do -i { sudo fatlabel /dev/vda1 BOOT } | complete)
+  let boot_dev = (findmnt -n -o SOURCE /boot | str trim)
+  if ($boot_dev | is-empty) {
+    warn "Could not detect boot partition mount"
+    return
+  }
+
+  if (confirm-prompt $"Label ($boot_dev) as BOOT for by-label disk references? [y/N]: ") {
+    let result = (do -i { sudo fatlabel $boot_dev BOOT } | complete)
     if ($result.exit_code != 0) {
       warn $"Failed to label boot partition.\n($result.stderr)"
     } else {
-      log "Boot partition labeled as BOOT"
+      log $"Boot partition ($boot_dev) labeled as BOOT"
     }
   } else {
     warn "Skipping boot partition labeling"
   }
 }
 
-def prompt-rebuild [repo_dir: string, target: string] {
+def "main rebuild" [repo_dir: string, target: string] {
   log-step "Step 5: Rebuilding NixOS configuration..."
 
   cd $repo_dir
@@ -288,7 +301,7 @@ def main [
   let repo_dir = (repo-dir)
 
   if not $skip_clone {
-    clone-or-update-repo $repo_dir
+    main dotfiles $repo_dir
   }
 
   if not ($repo_dir | path exists) {
@@ -298,7 +311,7 @@ def main [
   cd $repo_dir
 
   check-prerequisites $repo_dir
-  generate-vars $repo_dir
+  main vars $repo_dir
 
   if not $skip_generate {
     setup-host-directory $repo_dir $target $hardware_only
@@ -311,7 +324,7 @@ def main [
   }
 
   if not $skip_rebuild {
-    prompt-rebuild $repo_dir $target
+    main rebuild $repo_dir $target
   }
 
   print ""
