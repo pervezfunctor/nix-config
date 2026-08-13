@@ -126,7 +126,14 @@
     in
     {
       nixosConfigurations = {
-        nixos = mkMin ./hosts/nixos/configuration.nix;
+        bd795-sv =
+          mkOS
+            [
+              ./hosts/bd795-sv/configuration.nix
+              ./core/virt.nix
+              ./core/vfio.nix # GPU passthrough: binds dGPU + audio + USB ctlr to vfio-pci
+            ]
+            [ gnomeModules.homeModule ]; # btrfs subvols + EFI GRUB + GNOME
 
         gnome-libvirt-vm =
           mkOS
@@ -148,26 +155,27 @@
               ./home/dms.nix
             ];
 
-        bd795 = mkOS
-          [
-            ./hosts/bd795/configuration.nix
-            ./core/virt.nix
+        bd795 =
+          mkOS
+            [
+              ./hosts/bd795/configuration.nix
+              ./core/virt.nix
 
-            mango.nixosModules.mango
+              mango.nixosModules.mango
 
-            gnomeModules.nixosModule
-            mangoModules.nixosModule
-            niriModules.nixosModule
-          ]
-          [
-            gnomeModules.homeModule
-            mangoModules.homeModule
-            niriModules.homeModule
+              gnomeModules.nixosModule
+              mangoModules.nixosModule
+              niriModules.nixosModule
+            ]
+            [
+              gnomeModules.homeModule
+              mangoModules.homeModule
+              niriModules.homeModule
 
-            ./home/gtk.nix
-            ./home/dms.nix
-            ./home/noctalia.nix
-          ];
+              ./home/gtk.nix
+              ./home/dms.nix
+              ./home/noctalia.nix
+            ];
 
         niri-nuc-vm =
           mkOS

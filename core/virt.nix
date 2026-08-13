@@ -4,6 +4,7 @@
     libvirtd = {
       enable = true;
       qemu.vhostUserPackages = [ pkgs.virtiofsd ];
+      qemu.swtpm.enable = true;
       nss.enable = true;
       firewallBackend = "nftables";
       allowedBridges = [ "virbr0" ];
@@ -22,8 +23,13 @@
     lazydocker
     libguestfs
     libosinfo
+    looking-glass-client # zero-copy VM display client — pairs with qemu
+                         # ivshmem-plain device for high-fps VM display when
+                         # SPICE/GTK display paths bottleneck Venus/virgl.
+    swtpm
     virglrenderer
     virt-manager
+    virt-viewer
     virtiofsd
     xorriso
   ];

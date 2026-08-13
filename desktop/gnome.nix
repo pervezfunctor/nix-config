@@ -1,10 +1,10 @@
 { pkgs, ... }:
 {
   nixosModule = {
-    # services.displayManager.gdm.enable = true;
-    # security.pam.services.gdm.enableGnomeKeyring = true;
-    services.displayManager.cosmic-greeter.enable = true;
-    services.displayManager.defaultSession = "niri";
+    services.displayManager.gdm.enable = true;
+    security.pam.services.gdm.enableGnomeKeyring = true;
+    # services.displayManager.cosmic-greeter.enable = true;
+    # services.displayManager.defaultSession = "niri";
     services.desktopManager.gnome.enable = true;
     programs.dconf.enable = true;
 
