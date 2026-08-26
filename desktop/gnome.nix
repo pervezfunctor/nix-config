@@ -78,6 +78,9 @@
         experimental-features = [ "scale-monitor-framebuffer" ];
         dynamic-workspaces = false;
         center-new-windows = true;
+        # free the bare Super key so it reaches the win11 VM through Looking
+        # Glass capture mode; launching still works via Super+Space (search-light)
+        overlay-key = "";
       };
 
       # "org/gnome/desktop/background" = {
@@ -148,6 +151,13 @@
           "{\"wm_class\":\"vicinae\",\"scratch_layer\":true}"
           "{\"wm_class\":\"*\",\"preferredWidth\":\"50%\"}"
         ];
+      };
+
+      # gsd-power idle warnings ("Automatic Suspend"/"Automatic Logout") are sent
+      # under this app id; blocking the source suppresses even CRITICAL urgency
+      # notifications, without touching sleep-inactive-*-type (suspend still works)
+      "org/gnome/desktop/notifications/application/gnome-power-panel" = {
+        enable = false;
       };
 
       "org/gnome/desktop/screensaver" = {
