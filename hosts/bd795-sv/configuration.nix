@@ -32,11 +32,11 @@
       extraEntries = ''
         menuentry "Fedora KDE" {
           search --no-floppy --fs-uuid --set=root 00CE-B75C
-          chainloader /EFI/fedora-kde/shimx64.efi
+          chainloader /EFI/fedora/shimx64.efi
         }
         menuentry "Fedora GNOME" {
           search --no-floppy --fs-uuid --set=root 0401-8797
-          chainloader /EFI/fedora-gnome/shimx64.efi
+          chainloader /EFI/fedora/shimx64.efi
         }
         menuentry "CachyOS (Limine)" {
           search --no-floppy --fs-uuid --set=root 83E0-42C5
