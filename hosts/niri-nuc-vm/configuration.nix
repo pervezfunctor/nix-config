@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, vars, ... }:
 
 {
   imports = [
@@ -27,7 +27,7 @@
     LC_TIME = "en_US.UTF-8";
   };
 
-  users.users.pervez = {
+  users.users.${vars.username} = {
     isNormalUser = true;
     description = "Pervez Iqbal";
     extraGroups = [

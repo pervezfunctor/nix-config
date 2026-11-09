@@ -2,7 +2,12 @@
 # Mirrors the repo's other hosts but swaps GRUB in for systemd-boot because
 # /boot is a btrfs subvol (boot_nixos) and the FAT ESP is at /boot/efi.
 # systemd-boot CANNOT read a btrfs /boot — GRUB with --modules=btrfs is mandatory.
-{ pkgs, ... }:
+{
+  pkgs,
+  lib,
+  vars,
+  ...
+}:
 
 {
   imports = [
@@ -76,7 +81,7 @@
     pulse.enable = true;
   };
 
-  users.users.pervez = {
+  users.users.${vars.username} = {
     isNormalUser = true;
     description = "Pervez Iqbal";
     extraGroups = [
@@ -96,6 +101,8 @@
   # btrfs auto-scrub (optional, nice for a btrfs root)
   services.btrfs.autoScrub.enable = true;
   services.btrfs.autoScrub.interval = "weekly";
+  # The `nixos-rebuild build-vm` variant swaps the btrfs mounts for a plain disk.
+  virtualisation.vmVariant.services.btrfs.autoScrub.enable = lib.mkForce false;
 
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "26.05";

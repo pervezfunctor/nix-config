@@ -1,10 +1,9 @@
+# Base home-manager setup. Feature modules (desktop/*.nix) and hosts add their
+# own home config via `home-manager.sharedModules`.
+{ inputs, vars, ... }:
 {
-  inputs,
-  vars,
-  homeImports,
-  ...
-}:
-{
+  imports = [ inputs.home-manager.nixosModules.home-manager ];
+
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
@@ -15,8 +14,7 @@
       imports = [
         ./home.nix
         ../home/dev.nix
-      ]
-      ++ homeImports;
+      ];
     };
   };
 }

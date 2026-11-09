@@ -1,9 +1,11 @@
-{ pkgs, ... }:
+{ pkgs, vars, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
   ];
+
+  home-manager.sharedModules = [ ../../home/gtk.nix ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -44,7 +46,7 @@
     pulse.enable = true;
   };
 
-  users.users.pervez = {
+  users.users.${vars.username} = {
     isNormalUser = true;
     description = "Pervez Iqbal";
     extraGroups = [

@@ -1,35 +1,37 @@
+# Sway compositor + its home config and the Noctalia shell.
 { pkgs, ... }:
 {
-  nixosModule = {
-    programs.sway = {
-      enable = true;
-      wrapperFeatures.gtk = true;
-    };
-
-    environment.systemPackages = with pkgs; [
-      swaylock-effects
-      swayidle
-      # mako
-    ];
+  programs.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true;
   };
+
+  environment.systemPackages = with pkgs; [
+    swaylock-effects
+    swayidle
+    # mako
+  ];
 
   # environment.sessionVariables = {
   #   XDG_CURRENT_DESKTOP = "sway";
   #   XDG_SESSION_TYPE = "wayland";
   # };
 
-  homeModule = {
-    home.pointerCursor.sway.enable = true;
+  home-manager.sharedModules = [
+    ../home/noctalia.nix
+    {
+      home.pointerCursor.sway.enable = true;
 
-    home.file = {
-      ".config/sway/config" = {
-        source = ../config/sway/config;
-        force = true;
+      home.file = {
+        ".config/sway/config" = {
+          source = ../config/sway/config;
+          force = true;
+        };
       };
-    };
-    # in case sway is launched from terminal
-    # wayland.windowManager.sway.systemd.variables = ["--all"];
-  };
+      # in case sway is launched from terminal
+      # wayland.windowManager.sway.systemd.variables = ["--all"];
+    }
+  ];
 }
 
 # without displaymanager autologin to sway on tty1

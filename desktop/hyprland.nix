@@ -1,32 +1,34 @@
+# Hyprland compositor + the Caelestia shell.
 { pkgs, ... }:
 {
-  nixosModule = {
-    programs.hyprland = {
-      enable = true;
-      withUWSM = true;
-      xwayland.enable = false;
-    };
-
-    environment.systemPackages = with pkgs; [
-      hyprcursor
-      hyprlauncher
-      hyprlock
-      hyprsysteminfo
-      hyprsunset
-      hyprpolkitagent
-      hyprland-qt-support
-      hyprpwcenter
-      hyprpaper
-      hypridle
-    ];
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+    xwayland.enable = false;
   };
 
-  homeModule = {
-    # home.file = {
-    #   ".config/hypr/hyprland.conf" = {
-    #     source = ../config/hypr/hyprland.conf;
-    #     force = true;
+  environment.systemPackages = with pkgs; [
+    hyprcursor
+    hyprlauncher
+    hyprlock
+    hyprsysteminfo
+    hyprsunset
+    hyprpolkitagent
+    hyprland-qt-support
+    hyprpwcenter
+    hyprpaper
+    hypridle
+  ];
+
+  home-manager.sharedModules = [
+    ../home/caelestia.nix
+    # {
+    #   home.file = {
+    #     ".config/hypr/hyprland.conf" = {
+    #       source = ../config/hypr/hyprland.conf;
+    #       force = true;
+    #     };
     #   };
-    # };
-  };
+    # }
+  ];
 }

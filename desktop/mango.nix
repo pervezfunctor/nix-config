@@ -1,35 +1,36 @@
+# Mango compositor + its home config and the Noctalia shell.
 { inputs, pkgs, ... }:
 {
-  nixosModule = {
-    programs.mango.enable = true;
+  imports = [ inputs.mango.nixosModules.mango ];
 
-    environment.systemPackages = with pkgs; [
-      swayidle
-    ];
-  };
+  programs.mango.enable = true;
 
-  homeModule = {
-    imports = [
-      inputs.mango.hmModules.mango
-    ];
+  environment.systemPackages = with pkgs; [
+    swayidle
+  ];
 
-    systemd.user.targets.mango-session = {
-      Unit = {
-        Description = "mango compositor session";
-        Requires = [ "graphical-session.target" ];
-        After = [ "graphical-session.target" ];
+  home-manager.sharedModules = [
+    inputs.mango.hmModules.mango
+    ../home/noctalia.nix
+    {
+      systemd.user.targets.mango-session = {
+        Unit = {
+          Description = "mango compositor session";
+          Requires = [ "graphical-session.target" ];
+          After = [ "graphical-session.target" ];
+        };
       };
-    };
 
-    wayland.windowManager.mango = {
-      enable = true;
-    };
-
-    home.file = {
-      ".config/mango/config.conf" = {
-        source = ../config/mango/config.conf;
-        force = true;
+      wayland.windowManager.mango = {
+        enable = true;
       };
-    };
-  };
+
+      home.file = {
+        ".config/mango/config.conf" = {
+          source = ../config/mango/config.conf;
+          force = true;
+        };
+      };
+    }
+  ];
 }

@@ -59,6 +59,9 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
+  # Add ~/.local/bin to PATH for all users and shells
+  environment.localBinInPath = true;
+
   environment.sessionVariables = {
     XCURSOR_SIZE = "32";
     XCURSOR_THEME = "Bibata-Modern-Ice";
@@ -66,7 +69,8 @@ in
     QT_QPA_PLATFORM = "wayland";
     QT_QPA_PLATFORMTHEME = "gtk3";
     QT_QPA_PLATFORMTHEME_QT6 = "gtk3";
-    TERM = "kitty";
+    # Don't set TERM here: it would override every login session (tty, ssh,
+    # root) via pam_env. Terminal emulators set TERM themselves.
     TERMINAL = "kitty";
   };
 
@@ -94,13 +98,38 @@ in
         "flakes"
       ];
       auto-optimise-store = true;
+
+      # Without this the daemon drops the `extra-substituters` /
+      # `extra-trusted-public-keys` that flake.nix's `nixConfig` hands it:
+      #   "ignoring untrusted substituter ..."
+      #   "ignoring the client-specified setting 'trusted-public-keys'"
+      trusted-users = [ vars.username ]; # merged with the "root" default
+
+      # Declare the caches system-wide as well, so they are used even when
+      # the flake's nixConfig is not in play (e.g. root/daemon-only builds).
+      extra-substituters = [
+        "https://herdr.cachix.org"
+        "https://cache.numtide.com"
+      ];
+      extra-trusted-public-keys = [
+        "herdr.cachix.org-1:3nH7IStRsS0ASfdonA0DCRR2ZrSCeWitZ7Kwew0cR4I="
+        "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+      ];
     };
     gc = {
       automatic = true;
       dates = "daily";
-      options = "--delete-older-than 2d";
+      # Keep enough generations to roll back a bad kernel/bootloader/VFIO change.
+      options = "--delete-older-than 14d";
       persistent = true;
     };
+  };
+
+  # Key-only SSH on every host that enables openssh.
+  services.openssh.settings = {
+    PasswordAuthentication = false;
+    KbdInteractiveAuthentication = false;
+    PermitRootLogin = "no";
   };
 
   programs.nix-ld.enable = true;

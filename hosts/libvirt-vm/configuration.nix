@@ -1,11 +1,16 @@
-{ pkgs, vars, ... }:
+{
+  pkgs,
+  lib,
+  vars,
+  ...
+}:
 
 {
   imports = [
     ./hardware-configuration.nix
   ];
 
-  networking.hostName = vars.hostname;
+  networking.hostName = lib.mkDefault "libvirt-vm";
   hardware.graphics.enable = true;
 
   boot.loader.systemd-boot.enable = true;
@@ -41,7 +46,7 @@
     pulse.enable = true;
   };
 
-  users.users.pervez = {
+  users.users.${vars.username} = {
     isNormalUser = true;
     description = "Pervez Iqbal";
     extraGroups = [

@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  home.packages = import ./wm-packages.nix { inherit pkgs; };
+  home.packages = import ../desktop/wm-packages.nix { inherit pkgs; };
 }
 
 # systemd.user.services.kanshi = {

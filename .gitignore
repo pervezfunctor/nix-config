@@ -1,1 +1,8 @@
 .zcode/
+
+# nix build output links
+result
+result-*
+
+# local scratch
+delta-install.sh

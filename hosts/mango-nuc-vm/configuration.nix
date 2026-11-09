@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ pkgs, ... }:
+{ pkgs, vars, ... }:
 
 {
   imports = [
@@ -55,7 +55,7 @@
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.pervez = {
+  users.users.${vars.username} = {
     isNormalUser = true;
     description = "Pervez Iqbal";
     extraGroups = [

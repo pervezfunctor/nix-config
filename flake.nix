@@ -1,6 +1,17 @@
 {
   description = "NixOS flake configuration";
 
+  nixConfig = {
+    extra-substituters = [
+      "https://herdr.cachix.org"
+      "https://cache.numtide.com"
+    ];
+    extra-trusted-public-keys = [
+      "herdr.cachix.org-1:3nH7IStRsS0ASfdonA0DCRR2ZrSCeWitZ7Kwew0cR4I="
+      "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+    ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
@@ -28,6 +39,22 @@
       url = "github:DreamMaoMao/mango";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    herdr-nix = {
+      url = "github:herdrdev/herdr-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Official Delta (delta.dev) flake. Upstream recommends `follows` so the
+    # patched binary links against the same glibc/Mesa as the host.
+    delta = {
+      url = "github:zed-industries/delta-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # AI coding agents. No `follows`: upstream only supports its pinned
+    # nixpkgs-unstable, and their binary cache only hits with that pin.
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs =
@@ -35,180 +62,81 @@
       self,
       nixpkgs,
       home-manager,
-      mango,
       ...
     }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
       vars = import ./vars.nix;
 
-      mangoModules = import ./desktop/mango.nix { inherit inputs pkgs; };
-      swayModules = import ./desktop/sway.nix { inherit inputs pkgs; };
-      gnomeModules = import ./desktop/gnome.nix { inherit inputs pkgs; };
-      niriModules = import ./desktop/niri.nix { inherit inputs pkgs; };
-      hyprlandModules = import ./desktop/hyprland.nix { inherit inputs pkgs; };
-
+      # Each desktop module carries its NixOS config, its home-manager config
+      # (via home-manager.sharedModules) and its default shell.
       baseOSModules = [
         ./core/core.nix
+        ./core/homeModule.nix
         ./desktop/portal.nix
         ./desktop/apps.nix
         ./desktop/wm.nix
-
-        home-manager.nixosModules.home-manager
-        ./core/homeModule.nix
       ];
+
       mkOS =
-        osModules: homeImports:
+        modules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit inputs vars homeImports; };
-
-          modules = baseOSModules ++ osModules;
+          specialArgs = { inherit inputs vars; };
+          modules = baseOSModules ++ modules;
         };
 
       mkHome =
         homeImports:
         home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${system};
-          modules = [
-            ./core/home.nix
-            ./home/wm.nix
-            ./home/dev.nix
-            ./home/gtk.nix
-          ]
-          ++ homeImports;
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
+          modules = [ ./core/home.nix ] ++ homeImports;
           extraSpecialArgs = { inherit inputs vars; };
         };
-
-      allOSModules = [
-        mango.nixosModules.mango
-
-        gnomeModules.nixosModule
-        hyprlandModules.nixosModule
-        mangoModules.nixosModule
-        niriModules.nixosModule
-        swayModules.nixosModule
-      ];
-
-      allHomeModules = [
-        gnomeModules.homeModule
-        hyprlandModules.homeModule
-        mangoModules.homeModule
-        niriModules.homeModule
-        swayModules.homeModule
-
-        ./home/gtk.nix
-        ./home/caelestia.nix
-        ./home/dms.nix
-        ./home/noctalia.nix
-      ];
-
-      mkMin = config: mkOS [ config ] [ ];
-      mkNoHm = config: mkOS ([ config ] ++ allOSModules) [ ];
-      mkSway =
-        config: mkOS [ config swayModules.nixosModule ] [ swayModules.homeModule ./home/noctalia.nix ];
-      mkNiri = config: mkOS [ config niriModules.nixosModule ] [ niriModules.homeModule ./home/dms.nix ];
-      mkHyprland =
-        config:
-        mkOS [ config hyprlandModules.nixosModule ] [ hyprlandModules.homeModule ./home/caelestia.nix ];
-      mkAll = config: mkOS ([ config ] ++ allOSModules) allHomeModules;
-      mkGnome = config: mkOS [ config gnomeModules.nixosModule ] [ gnomeModules.homeModule ];
-      mkMango =
-        config:
-        mkOS
-          [
-            config
-            mango.nixosModules.mango
-            mangoModules.nixosModule
-          ]
-          [ mangoModules.homeModule ./home/noctalia.nix ];
     in
     {
       nixosConfigurations = {
-        bd795-sv =
-          mkOS
-            [
-              ./hosts/bd795-sv/configuration.nix
-              ./core/virt.nix
-              ./core/vfio.nix # GPU passthrough: binds dGPU + audio + USB ctlr to vfio-pci
-            ]
-            [ gnomeModules.homeModule ]; # btrfs subvols + EFI GRUB + GNOME
+        # btrfs subvols + EFI GRUB + GNOME + GPU passthrough
+        bd795-sv = mkOS [
+          ./hosts/bd795-sv/configuration.nix
+          ./core/virt.nix
+          ./core/vfio.nix # binds dGPU + audio + USB ctlr to vfio-pci
+          ./desktop/gnome.nix
+        ];
 
-        gnome-libvirt-vm =
-          mkOS
-            [
-              ./hosts/libvirt-vm/configuration.nix
-              gnomeModules.nixosModule
-            ]
-            [ gnomeModules.homeModule ];
+        bd795 = mkOS [
+          ./hosts/bd795/configuration.nix
+          ./core/virt.nix
+          ./desktop/gnome.nix
+          ./desktop/mango.nix
+          ./desktop/niri.nix
+        ];
 
-        niri-libvirt-vm =
-          mkOS
-            [
-              ./hosts/libvirt-vm/configuration.nix
-              ./desktop/niri-greetd.nix
-              niriModules.nixosModule
-            ]
-            [
-              niriModules.homeModule
-              ./home/dms.nix
-            ];
+        gnome-libvirt-vm = mkOS [
+          ./hosts/libvirt-vm/configuration.nix
+          { networking.hostName = "gnome-libvirt-vm"; }
+          ./desktop/gnome.nix
+        ];
 
-        bd795 =
-          mkOS
-            [
-              ./hosts/bd795/configuration.nix
-              ./core/virt.nix
+        niri-libvirt-vm = mkOS [
+          ./hosts/libvirt-vm/configuration.nix
+          { networking.hostName = "niri-libvirt-vm"; }
+          ./desktop/niri-greetd.nix
+          ./desktop/niri.nix
+        ];
 
-              mango.nixosModules.mango
+        niri-nuc-vm = mkOS [
+          ./hosts/niri-nuc-vm/configuration.nix
+          ./desktop/niri.nix
+        ];
 
-              gnomeModules.nixosModule
-              mangoModules.nixosModule
-              niriModules.nixosModule
-            ]
-            [
-              gnomeModules.homeModule
-              mangoModules.homeModule
-              niriModules.homeModule
-
-              ./home/gtk.nix
-              ./home/dms.nix
-              ./home/noctalia.nix
-            ];
-
-        niri-nuc-vm =
-          mkOS
-            [
-              niriModules.nixosModule
-              ./hosts/niri-nuc-vm/configuration.nix
-            ]
-            [
-              niriModules.homeModule
-              ./home/dms.nix
-            ];
-
-        mango-nuc-vm =
-          mkOS
-            [
-              mango.nixosModules.mango
-              mangoModules.nixosModule
-              ./hosts/mango-nuc-vm/configuration.nix
-            ]
-            [
-              mangoModules.homeModule
-              ./home/noctalia.nix
-            ];
-
-        # only for testing, you need to copy your system configuration
-        # for eg: cp  /etc/nixos/* ./nixos/
-        sway = mkSway ./hosts/nixos/configuration.nix;
-        niri = mkNiri ./hosts/nixos/configuration.nix;
-        hyprland = mkHyprland ./hosts/nixos/configuration.nix;
-        mango = mkMango ./hosts/nixos/configuration.nix;
-        gnome = mkGnome ./hosts/nixos/configuration.nix;
-        noHm = mkNoHm ./hosts/nixos/configuration.nix;
-        all = mkAll ./hosts/nixos/configuration.nix;
+        mango-nuc-vm = mkOS [
+          ./hosts/mango-nuc-vm/configuration.nix
+          ./desktop/mango.nix
+        ];
       };
 
       packages.${system} = nixpkgs.lib.mapAttrs' (n: v: {
@@ -216,20 +144,22 @@
         value = v.config.system.build.vm;
       }) self.nixosConfigurations;
 
-      homeConfigurations = {
-        noctalia = mkHome [ ./home/noctalia.nix ];
-        dms = mkHome [ ./home/dms.nix ];
-        caelestia = mkHome [ ./home/caelestia.nix ];
-
-        dmsOnly = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${system};
-          modules = [
-            ./core/home.nix
+      homeConfigurations =
+        let
+          desktopHome = [
+            ./home/wm.nix
+            ./home/dev.nix
+            ./home/gtk.nix
+          ];
+        in
+        {
+          noctalia = mkHome (desktopHome ++ [ ./home/noctalia.nix ]);
+          dms = mkHome (desktopHome ++ [ ./home/dms.nix ]);
+          caelestia = mkHome (desktopHome ++ [ ./home/caelestia.nix ]);
+          dmsOnly = mkHome [
             ./home/dms.nix
             ./home/min-packages.nix
           ];
-          extraSpecialArgs = { inherit inputs vars; };
         };
-      };
     };
 }

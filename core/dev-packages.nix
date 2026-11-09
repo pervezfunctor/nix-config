@@ -1,14 +1,47 @@
-{ pkgs, ... }:
+{ pkgs, inputs }:
 
+let
+  system = pkgs.stdenv.hostPlatform.system;
+  agents = inputs.llm-agents.packages.${system};
+
+  # delta.dev's Delta ships a `delta` CLI that collides with the `delta` git
+  # pager below, so expose it as `delta-cli`. The desktop entry launches the
+  # original store path, and `delta-app` (the GUI) is unaffected.
+  delta-dev =
+    let
+      pkg = inputs.delta.packages.${system}.delta;
+    in
+    pkgs.symlinkJoin {
+      name = "delta-dev-${pkg.version}";
+      paths = [ pkg ];
+      postBuild = ''
+        mv $out/bin/delta $out/bin/delta-cli
+      '';
+      meta = pkg.meta // {
+        mainProgram = "delta-cli";
+      };
+    };
+in
 with pkgs;
 [
+  inputs.herdr-nix.packages.${system}.default
+  delta-dev
+
+  # From numtide/llm-agents.nix (cache.numtide.com)
+  agents.claude-code # `claude`
+  agents.claude-desktop
+  agents.codex
+  agents.chatgpt # ChatGPT + Codex desktop app
+  agents.pi
+  agents.antigravity-cli
+  agents.t3code-desktop
+
   antigravity-fhs
   google-authenticator
   bat
   bitwarden-cli
   bottom
   clang-tools
-  claude-code
   curl
   delta
   devbox
