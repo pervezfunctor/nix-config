@@ -1,7 +1,18 @@
 #! /usr/bin/env nu
 
+# Show this help
+def "main help" [] { help main }
+
+# Boot a libvirt image in QEMU with Venus (Vulkan) GPU acceleration
+#
 # Extra args are passed to qemu, e.g. `nu vm-venus.nu nixos -snapshot`.
-def --wrapped main [image: string, ...extra: string] {
+def --wrapped main [
+  image: string     # Image name (~/.local/share/libvirt/images/images/<image>.qcow2)
+  ...extra: string  # Extra arguments passed to qemu
+] {
+  # --wrapped passes --help/-h through as arguments instead of handling them.
+  if $image in ["--help" "-h"] { print (help main); return }
+
   let vars_file = $"($env.HOME)/.config/libvirt/qemu/nvram/($image)_VARS.fd"
   let disk_file = $"($env.HOME)/.local/share/libvirt/images/images/($image).qcow2"
 

@@ -334,3 +334,6 @@ def main [
   print "Your NixOS configuration is now ready!"
   print "Remember to reboot your system and commit your changes."
 }
+
+# Show this help
+def "main help" [] { help main }

@@ -286,6 +286,10 @@ def test-flake-has-nixos-configurations [] {
 # Runner
 # ──────────────────────────────────────────────
 
+# Show this help
+def "main help" [] { help main }
+
+# Run the setup.nu test suite in isolated temp directories
 def main [] {
   let tests = [
     [group, name, run];

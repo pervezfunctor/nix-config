@@ -38,4 +38,26 @@ lockscreen() {
   return 1
 }
 
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [-h|--help|help]
+
+Lock the screen with the running desktop shell (DMS, Noctalia; Caelestia
+locks itself), falling back to swaylock.
+EOF
+}
+
+case "${1:-}" in
+-h | --help | help)
+  usage
+  exit 0
+  ;;
+"") ;;
+*)
+  echo "Unknown argument: $1" >&2
+  usage >&2
+  exit 1
+  ;;
+esac
+
 lockscreen

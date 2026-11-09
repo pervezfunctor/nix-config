@@ -3,6 +3,22 @@
 # Usage: ndh [flake_path]   (defaults to current directory)
 set -euo pipefail
 
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [flake_path] [-h|--help|help]
+
+Pick a NixOS, nix-darwin or Home Manager configuration from the flake with
+fzf and switch to it. flake_path defaults to the current directory.
+EOF
+}
+
+case "${1:-}" in
+-h | --help | help)
+  usage
+  exit 0
+  ;;
+esac
+
 FLAKE_PATH="${1:-.}"
 
 require() {

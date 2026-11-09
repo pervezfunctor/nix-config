@@ -1,5 +1,28 @@
 #!/usr/bin/env sh
 
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [-h|--help|help]
+
+Create the empty, untracked local override files (local.conf, DMS and
+noctalia includes) that the hypr, kitty, mango, niri and sway configs
+source, so those configs load on a fresh machine. Existing files are kept.
+EOF
+}
+
+case "${1:-}" in
+-h | --help | help)
+  usage
+  exit 0
+  ;;
+"") ;;
+*)
+  echo "Unknown argument: $1" >&2
+  usage >&2
+  exit 1
+  ;;
+esac
+
 mkdir -p ~/.config/hypr
 mkdir -p ~/.config/kitty
 mkdir -p ~/.config/mango

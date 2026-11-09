@@ -11,15 +11,34 @@ LOCK_TIME=180
 DPMS_TIME=210
 SUSPEND_TIME=600
 
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [--no-suspend] [-h|--help|help]
+
+Start an idle daemon (hypridle on Hyprland, swayidle on mango/niri/sway):
+  ${LOCK_TIME}s   lock the screen
+  ${DPMS_TIME}s   turn monitors off
+  ${SUSPEND_TIME}s   suspend (skipped with --no-suspend or inside a VM)
+
+Options:
+  --no-suspend   Never suspend
+  -h, --help     Show this help
+EOF
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
   --no-suspend)
     SUSPEND_ENABLED=false
     shift
     ;;
+  -h | --help | help)
+    usage
+    exit 0
+    ;;
   *)
     echo "Unknown option: $1" >&2
-    echo "Usage: $0 [--no-suspend]" >&2
+    usage >&2
     exit 1
     ;;
   esac

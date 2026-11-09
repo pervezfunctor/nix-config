@@ -1,17 +1,7 @@
 #!/usr/bin/env nu
 
-def print-help [] {
-  print ""
-  print "Usage:  nu vm.nu [target] [--clean]"
-  print ""
-  print "If no target provided, shows interactive picker."
-  print "Target names are automatically appended with '-vm'."
-  print ""
-  print "Options:"
-  print "  -c, --clean    Remove the VM disk (./<hostname>.qcow2) before building"
-  print "  -h, --help     Show this help"
-  print ""
-}
+# Show this help
+def "main help" [] { help main }
 
 def get-vm-targets [] {
   let system = "x86_64-linux"
@@ -24,16 +14,14 @@ def get-vm-targets [] {
   }
 }
 
+# Build and run a flake's NixOS VM (packages.x86_64-linux.<target>-vm)
+#
+# If no target is given, shows an interactive picker.
+# Target names are automatically appended with '-vm'.
 def main [
-  target?: string
-  --clean(-c)
-  --help(-h)
+  target?: string  # VM target, with or without the '-vm' suffix
+  --clean(-c)      # Remove the VM disk (./<hostname>.qcow2) before building
 ] {
-  if $help or ($target == "help") {
-    print-help
-    return
-  }
-
   let full_target = if ($target == null) {
     let vm_targets = get-vm-targets
     if ($vm_targets | length) == 0 {

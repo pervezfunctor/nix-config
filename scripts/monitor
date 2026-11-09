@@ -75,15 +75,27 @@ monitor_on() {
   fi
 }
 
-case "$1" in
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") {on|off|-h|--help|help}
+
+Turn all monitors on or off for the running compositor
+(Hyprland, mango, niri, sway, or any wlroots compositor via wlr-randr).
+EOF
+}
+
+case "${1:-}" in
 on)
   monitor_on
   ;;
 off)
   monitor_off
   ;;
+-h | --help | help)
+  usage
+  ;;
 *)
-  echo "Usage: $0 {on|off}" >&2
+  usage >&2
   exit 1
   ;;
 esac

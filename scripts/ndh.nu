@@ -41,7 +41,13 @@ def deploy [label: string, cmd: list<string>] {
     print $"✓ ($label) deployment successful"
 }
 
-def main [flake_path: string = "."] {
+# Show this help
+def "main help" [] { help main }
+
+# Pick a NixOS/Darwin/Home Manager configuration from a flake with fzf and deploy it
+def main [
+    flake_path: string = "."  # Flake directory (defaults to current directory)
+] {
     require nix
     require fzf
 
