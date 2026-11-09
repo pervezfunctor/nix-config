@@ -1,6 +1,6 @@
 { pkgs, inputs, ... }:
 {
-  home.packages = import ../core/dev-packages.nix { inherit pkgs inputs; };
+  home.packages = import ../core/cli-packages.nix { inherit pkgs inputs; };
 
   programs = {
     zsh = {

@@ -68,23 +68,31 @@
       system = "x86_64-linux";
       vars = import ./vars.nix;
 
+      # CLI base: shells, nix settings, home-manager with CLI dev tools.
+      cliModules = [
+        ./core/cli.nix
+        ./core/homeModule.nix
+      ];
+
       # Each desktop module carries its NixOS config, its home-manager config
       # (via home-manager.sharedModules) and its default shell.
-      baseOSModules = [
-        ./core/core.nix
-        ./core/homeModule.nix
+      guiModules = cliModules ++ [
+        ./core/gui.nix
         ./desktop/portal.nix
         ./desktop/apps.nix
         ./desktop/wm.nix
       ];
 
-      mkOS =
+      mkSystem =
         modules:
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit inputs vars; };
-          modules = baseOSModules ++ modules;
+          inherit modules;
         };
+
+      mkOS = modules: mkSystem (guiModules ++ modules);
+      mkCliOS = modules: mkSystem (cliModules ++ modules);
 
       mkHome =
         homeImports:
@@ -137,6 +145,9 @@
           ./hosts/mango-nuc-vm/configuration.nix
           ./desktop/mango.nix
         ];
+
+        # Headless: no GUI modules, no GUI packages.
+        cli-vm = mkCliOS [ ./hosts/cli-vm ];
       };
 
       packages.${system} = nixpkgs.lib.mapAttrs' (n: v: {
@@ -147,16 +158,20 @@
       homeConfigurations =
         let
           desktopHome = [
+            ./home/gui-base.nix
             ./home/wm.nix
             ./home/dev.nix
+            ./home/dev-gui.nix
             ./home/gtk.nix
           ];
         in
         {
+          cli = mkHome [ ./home/dev.nix ];
           noctalia = mkHome (desktopHome ++ [ ./home/noctalia.nix ]);
           dms = mkHome (desktopHome ++ [ ./home/dms.nix ]);
           caelestia = mkHome (desktopHome ++ [ ./home/caelestia.nix ]);
           dmsOnly = mkHome [
+            ./home/gui-base.nix
             ./home/dms.nix
             ./home/min-packages.nix
           ];
