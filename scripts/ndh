@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
+# Nix Darwin/Home-Manager/NixOS deployment helper
+# Usage: ndh [flake_path]   (defaults to current directory)
 set -euo pipefail
 
 FLAKE_PATH="${1:-.}"
 
 require() {
   command -v "$1" >/dev/null || {
-    echo "Missing dependency: $1"
+    echo "Missing dependency: $1" >&2
     exit 1
   }
 }
@@ -14,61 +16,63 @@ require nix
 require jq
 require fzf
 
-has_attr() {
-  nix eval --json "${FLAKE_PATH}#$1" >/dev/null 2>&1
+# Print the attribute names of a flake output, one per line.
+# Only names are evaluated; evaluating whole configurations as JSON fails.
+attr_names() {
+  nix eval --json "${FLAKE_PATH}#$1" --apply builtins.attrNames 2>/dev/null | jq -r '.[]'
 }
 
-declare -A TARGETS
+declare -A TARGETS=(
+  [nixos]=nixosConfigurations
+  [darwin]=darwinConfigurations
+  [home]=homeConfigurations
+)
 
-if has_attr nixosConfigurations; then
-  TARGETS[nixos]="nixosConfigurations"
-  echo "nixos configurations:
-fi
+mapfile -t TYPES < <(
+  for type in "${!TARGETS[@]}"; do
+    if nix eval "${FLAKE_PATH}#${TARGETS[$type]}" --apply 'x: true' >/dev/null 2>&1; then
+      echo "$type"
+    fi
+  done | sort
+)
 
-if has_attr darwinConfigurations; then
-  TARGETS[darwin]="darwinConfigurations"
-fi
-
-if has_attr homeConfigurations; then
-  TARGETS[home]="homeConfigurations"
-fi
-
-if [[ ${#TARGETS[@]} -eq 0 ]]; then
-  echo "No supported flake outputs found"
+if [[ ${#TYPES[@]} -eq 0 ]]; then
+  echo "No supported flake outputs found in ${FLAKE_PATH}" >&2
   exit 1
 fi
 
-# Select configuration type
-TYPE=$(printf '%s\n' "${!TARGETS[@]}" | sort | fzf --prompt="Config type ❯ ")
-[[ -z "${TYPE:-}" ]] && exit 0
+TYPE=$(printf '%s\n' "${TYPES[@]}" | fzf --prompt="Config type ❯ ") || exit 0
+[[ -z "$TYPE" ]] && exit 0
 
 ATTR="${TARGETS[$TYPE]}"
 
-mapfile -t NAMES < <(
-  nix eval --json "${FLAKE_PATH}#${ATTR}" | jq -r 'keys[]'
-)
+if ! NAMES_RAW=$(attr_names "$ATTR"); then
+  echo "Failed to evaluate ${ATTR}" >&2
+  exit 1
+fi
+mapfile -t NAMES <<<"$NAMES_RAW"
 
-if [[ ${#NAMES[@]} -eq 0 ]]; then
-  echo "No targets found for ${TYPE}"
+if [[ -z "${NAMES[0]:-}" ]]; then
+  echo "No targets found for ${TYPE}" >&2
   exit 1
 fi
 
-NAME=$(printf '%s\n' "${NAMES[@]}" | fzf --prompt="${TYPE} target ❯ ")
-[[ -z "${NAME:-}" ]] && exit 0
+NAME=$(printf '%s\n' "${NAMES[@]}" | fzf --prompt="${TYPE} target ❯ ") || exit 0
+[[ -z "$NAME" ]] && exit 0
 
 case "$TYPE" in
   nixos)
-    exec sudo nixos-rebuild switch \
-      --flake "${FLAKE_PATH}#${NAME}"
+    echo "Deploying NixOS configuration: ${NAME}"
+    exec sudo nixos-rebuild switch --flake "${FLAKE_PATH}#${NAME}"
     ;;
   darwin)
     require darwin-rebuild
-    exec darwin-rebuild switch \
-      --flake "${FLAKE_PATH}#${NAME}"
+    echo "Deploying Darwin configuration: ${NAME}"
+    exec darwin-rebuild switch --flake "${FLAKE_PATH}#${NAME}"
     ;;
   home)
     require home-manager
-    exec home-manager switch \
-      --flake "${FLAKE_PATH}#${NAME}"
+    echo "Deploying Home Manager configuration: ${NAME}"
+    exec home-manager switch --flake "${FLAKE_PATH}#${NAME}"
     ;;
 esac

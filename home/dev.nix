@@ -10,6 +10,7 @@
     nushell = {
       enable = true;
       plugins = [ pkgs.nushellPlugins.formats ];
+      loadSessionVariables = false;
       settings = {
         show_banner = false;
       };

@@ -1,8 +1,9 @@
 #! /usr/bin/env nu
 
-def main [image: string] {
-  let vars_file = $"/home/pervez/.config/libvirt/qemu/nvram/($image)_VARS.fd"
-  let disk_file = $"/home/pervez/.local/share/libvirt/images/($image).qcow2"
+# Extra args are passed to qemu, e.g. `nu vm-venus.nu nixos -snapshot`.
+def --wrapped main [image: string, ...extra: string] {
+  let vars_file = $"($env.HOME)/.config/libvirt/qemu/nvram/($image)_VARS.fd"
+  let disk_file = $"($env.HOME)/.local/share/libvirt/images/images/($image).qcow2"
 
   with-env { GDK_BACKEND: wayland} {
     let args = [
@@ -27,6 +28,6 @@ def main [image: string] {
       "-drive" $"file=($disk_file)"
     ]
 
-    qemu-system-x86_64 ...$args
+    qemu-system-x86_64 ...$args ...$extra
   }
 }

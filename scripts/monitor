@@ -1,24 +1,55 @@
 #! /usr/bin/env bash
+# Turn all monitors off or on for the running compositor.
+# Usage: monitor {on|off}
 
 has_cmd() {
   command -v "$1" >/dev/null 2>&1
+}
+
+# Outputs disabled by `monitor off` on mango, so `monitor on` can re-enable
+# them (disabled outputs may no longer be listed).
+MANGO_STATE="${XDG_RUNTIME_DIR:-/tmp}/monitor-mango-outputs"
+
+mango_outputs() {
+  mmsg get all-monitors | jq -r '.monitors[].name'
+}
+
+wlr_outputs() {
+  wlr-randr --json | jq -r '.[].name'
+}
+
+# Run "$@ <output>" for each output name on stdin; succeed if any call did.
+for_each_output() {
+  local name ok=1
+  while IFS= read -r name; do
+    [[ -n "$name" ]] || continue
+    "$@" "$name" && ok=0
+  done
+  return "$ok"
+}
+
+mango_set() {
+  mmsg dispatch "$1,$2"
+}
+
+wlr_set() {
+  wlr-randr --output "$2" "$1"
 }
 
 monitor_off() {
   if [[ "$XDG_CURRENT_DESKTOP" == *"Hyprland"* ]]; then
     hyprctl dispatch dpms off
   elif [[ "$XDG_CURRENT_DESKTOP" == *"mango"* ]]; then
-    mmsg -d disable_monitor,DP-1
-    mmsg -d disable_monitor,DP-2
-    mmsg -d disable_monitor,HDMI-A-1
-    mmsg -d disable_monitor,HDMI-A-2
-    mmsg -d disable_monitor,eDP-1
+    mango_outputs >"$MANGO_STATE" || return 1
+    for_each_output mango_set disable_monitor <"$MANGO_STATE"
   elif [[ "$XDG_CURRENT_DESKTOP" == *"niri"* ]]; then
     niri msg action power-off-monitors
   elif [[ "$XDG_CURRENT_DESKTOP" == *"sway"* ]]; then
     swaymsg "output * power off"
+  elif has_cmd wlr-randr; then
+    wlr_outputs | for_each_output wlr_set --off
   else
-    has_cmd wlr-randr && wlr-randr --output '*' --off && return 0
+    echo "Unsupported compositor: ${XDG_CURRENT_DESKTOP:-unknown}" >&2
     return 1
   fi
 }
@@ -27,17 +58,19 @@ monitor_on() {
   if [[ "$XDG_CURRENT_DESKTOP" == *"Hyprland"* ]]; then
     hyprctl dispatch dpms on
   elif [[ "$XDG_CURRENT_DESKTOP" == *"mango"* ]]; then
-    mmsg -d enable_monitor,DP-1
-    mmsg -d enable_monitor,DP-2
-    mmsg -d enable_monitor,HDMI-A-1
-    mmsg -d enable_monitor,HDMI-A-2
-    mmsg -d enable_monitor,eDP-1
+    if [[ -s "$MANGO_STATE" ]]; then
+      for_each_output mango_set enable_monitor <"$MANGO_STATE"
+    else
+      mango_outputs | for_each_output mango_set enable_monitor
+    fi
   elif [[ "$XDG_CURRENT_DESKTOP" == *"niri"* ]]; then
     niri msg action power-on-monitors
   elif [[ "$XDG_CURRENT_DESKTOP" == *"sway"* ]]; then
     swaymsg "output * power on"
+  elif has_cmd wlr-randr; then
+    wlr_outputs | for_each_output wlr_set --on
   else
-    has_cmd wlr-randr && wlr-randr --output '*' --on && return 0
+    echo "Unsupported compositor: ${XDG_CURRENT_DESKTOP:-unknown}" >&2
     return 1
   fi
 }

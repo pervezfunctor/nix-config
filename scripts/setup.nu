@@ -31,17 +31,23 @@ def die [msg: string] {
   exit 1
 }
 
+def get-hostname [] {
+  (sys host).hostname | default "" | str trim
+}
+
+# Returns true only on an explicit y/Y. No TTY (input fails) counts as "no".
 def confirm-prompt [prompt: string] {
-  let answer = (input $prompt | str trim | str downcase)
-  $answer == "y"
+  let answer = try { input $prompt | str trim } catch { "" }
+  $answer in ["y" "Y"]
 }
 
 def confirm-overwrite [file: string] {
   if not (confirm-prompt $"($file) already exists. Overwrite? [y/N]: ") {
-    error make {msg: "Aborted."}
+    die "Aborted."
   }
 }
 
+# Clone the nix-config repository (skipped if it already exists)
 def "main dotfiles" [repo_dir: string] {
   log-step "Step 1: Cloning nix-config repository..."
 
@@ -82,20 +88,21 @@ def check-prerequisites [repo_dir: string] {
     die "nixos-rebuild is not available. Please run this script on a NixOS system."
   }
 
-  let hostname = (hostname | str trim)
+  let hostname = (get-hostname)
   if ($hostname | is-empty) {
     die "Hostname is empty"
   }
 
-  log ("Prerequisites check passed (hostname: " + $hostname + ")")
+  log $"Prerequisites check passed \(hostname: ($hostname)\)"
 }
 
+# Generate vars.nix with the current user, home directory and hostname
 def "main vars" [repo_dir: string] {
   log-step "Step 2: Generating vars.nix..."
 
   let username = (whoami | str trim)
   let homeDirectory = ($env.HOME | str trim)
-  let hostname = (hostname | str trim)
+  let hostname = (get-hostname)
   let vars_file = $"($repo_dir)/vars.nix"
 
   if ($username | is-empty) { die "USER is empty" }
@@ -121,52 +128,55 @@ def "main vars" [repo_dir: string] {
   try {
     $nix_content | save -f $vars_file
   } catch { |e|
-    die $"Failed to write ($vars_file).\n($e)"
+    die $"Failed to write ($vars_file).\n($e.msg)"
   }
 
   log $"vars.nix generated: username=($username), home=($homeDirectory), hostname=($hostname)"
 }
 
+# nixos-generate-config needs root to probe hardware (e.g. btrfs subvolumes).
 def setup-host-directory [repo_dir: string, target: string, hardware_only: bool] {
   let host_dir = $"($repo_dir)/hosts/($target)"
 
   log-step $"Step 3: Setting up host directory for '($target)'..."
 
+  if not (has-cmd nixos-generate-config) {
+    die "nixos-generate-config is not available. Please run this script on a NixOS system."
+  }
+
   if not ($host_dir | path exists) {
     mkdir $host_dir
     log $"Created host directory: ($host_dir)"
 
-    if ("/etc/nixos" | path exists) {
-      if ("/etc/nixos/configuration.nix" | path exists) {
-        cp "/etc/nixos/configuration.nix" $"($host_dir)/"
+    for file in ["configuration.nix" "hardware-configuration.nix"] {
+      let src = $"/etc/nixos/($file)"
+      if ($src | path exists) {
+        cp $src $"($host_dir)/"
       } else {
-        warn "/etc/nixos/configuration.nix not found, skipping"
-      }
-      if ("/etc/nixos/hardware-configuration.nix" | path exists) {
-        cp "/etc/nixos/hardware-configuration.nix" $"($host_dir)/"
-      } else {
-        warn "/etc/nixos/hardware-configuration.nix not found, skipping"
+        warn $"($src) not found, skipping"
       }
     }
   }
 
-  if $hardware_only {
+  if $hardware_only or ($"($host_dir)/configuration.nix" | path exists) {
+    # Only hardware-configuration.nix needs (re)generating. Capture it and
+    # save as the current user so the repo doesn't get root-owned files.
     print "Generating hardware-configuration.nix..."
-    let hw_file = $"($host_dir)/hardware-configuration.nix"
-    let result = (do -i {
-      nixos-generate-config --dir $host_dir --show-hardware-config | save -f $hw_file
-    } | complete)
+    let result = (do -i { ^sudo nixos-generate-config --show-hardware-config } | complete)
     if ($result.exit_code != 0) {
       die $"Failed to generate hardware configuration.\n($result.stderr)"
     }
+    $result.stdout | save -f $"($host_dir)/hardware-configuration.nix"
     log "Hardware configuration generated"
   } else {
-    print "Regenerating NixOS configuration files..."
-    let result = (do -i { nixos-generate-config --dir $host_dir } | complete)
+    print "Generating NixOS configuration files..."
+    let result = (do -i { ^sudo nixos-generate-config --dir $host_dir } | complete)
     if ($result.exit_code != 0) {
       die $"Failed to generate NixOS configuration.\n($result.stderr)"
     }
-    log "NixOS configuration files regenerated"
+    let user = (whoami | str trim)
+    do -i { ^sudo chown -R $user $host_dir } | complete | ignore
+    log "NixOS configuration files generated"
   }
 }
 
@@ -194,10 +204,10 @@ def add-to-git [repo_dir: string, target: string] {
     let full_path = $"($repo_dir)/($file)"
     if ($full_path | path exists) {
       let result = (do -i {
-        ^nix run nixpkgs#git -- -C $repo_dir add $full_path 2>/dev/null
+        ^nix run nixpkgs#git -- -C $repo_dir add $full_path
       } | complete)
       if ($result.exit_code != 0) {
-        warn $"Failed to add ($file) to git"
+        warn $"Failed to add ($file) to git: ($result.stderr | str trim)"
       } else {
         log $"Added ($file) to git"
       }
@@ -210,14 +220,14 @@ def add-to-git [repo_dir: string, target: string] {
 def label-boot-partition [] {
   log-step "Step 4: Labeling boot partition..."
 
-  let boot_dev = (findmnt -n -o SOURCE /boot | str trim)
+  let boot_dev = (do -i { ^findmnt -n -o SOURCE /boot } | complete | get stdout | str trim)
   if ($boot_dev | is-empty) {
     warn "Could not detect boot partition mount"
     return
   }
 
   if (confirm-prompt $"Label ($boot_dev) as BOOT for by-label disk references? [y/N]: ") {
-    let result = (do -i { sudo fatlabel $boot_dev BOOT } | complete)
+    let result = (do -i { ^sudo fatlabel $boot_dev BOOT } | complete)
     if ($result.exit_code != 0) {
       warn $"Failed to label boot partition.\n($result.stderr)"
     } else {
@@ -228,56 +238,37 @@ def label-boot-partition [] {
   }
 }
 
+# Rebuild NixOS from the flake for the given target
 def "main rebuild" [repo_dir: string, target: string] {
   log-step "Step 5: Rebuilding NixOS configuration..."
 
-  cd $repo_dir
-  let check = (do -i { ^nix eval $".#nixosConfigurations.($target)" } | complete)
+  let flake_ref = $"($repo_dir)#($target)"
+
+  # Check only that the attribute exists; evaluating the whole system
+  # configuration would take forever.
+  let check = (do -i {
+    ^nix eval $"($repo_dir)#nixosConfigurations.($target)" --apply "x: true"
+  } | complete)
   if ($check.exit_code != 0) {
     warn $"No '($target)' entry in flake.nix nixosConfigurations"
-    print $"Add this to flake.nix:"
-    print $"  ($target) = mkMin ./hosts/($target)/configuration.nix;"
-    print $"Then run: sudo nixos-rebuild switch --flake .#($target)"
+    print "Add this to nixosConfigurations in flake.nix (mkOS for a desktop, mkCliOS for headless):"
+    print $"  ($target) = mkOS [ ./hosts/($target)/configuration.nix ];"
+    print $"Then run: sudo nixos-rebuild switch --flake ($flake_ref)"
     return
   }
 
-  if (confirm-prompt $"Rebuild NixOS with '--flake .#($target)'? [y/N]: ") {
-    print $"Running: sudo nixos-rebuild switch --flake ($repo_dir)/#($target)"
-    let result = (do -i { sudo nixos-rebuild switch --flake $"($repo_dir)/#($target)" } | complete)
-    if ($result.exit_code != 0) {
-      die $"NixOS rebuild failed.\n($result.stderr)"
+  if (confirm-prompt $"Rebuild NixOS with '--flake ($flake_ref)'? [y/N]: ") {
+    print $"Running: sudo nixos-rebuild switch --flake ($flake_ref)"
+    try {
+      ^sudo nixos-rebuild switch --flake $flake_ref
+    } catch {
+      die $"NixOS rebuild failed \(exit code ($env.LAST_EXIT_CODE)\)"
     }
     log "NixOS rebuild complete"
   } else {
     warn "Skipping rebuild"
-    print $"Run manually: sudo nixos-rebuild switch --flake ($repo_dir)/#($target)"
+    print $"Run manually: sudo nixos-rebuild switch --flake ($flake_ref)"
   }
-}
-
-def print-help [] {
-  print ""
-  print "NixOS Config Setup Script"
-  print ""
-  print "Usage:"
-  print "  nu setup.nu [--target <name>] [--skip-clone] [--skip-generate] [--skip-rebuild] [--skip-label] [--hardware-only]"
-  print ""
-  print "Description:"
-  print "  1. Clones nix-config repository to ~/.nix-config"
-  print "  2. Generates vars.nix with current user info"
-  print "  3. Creates host directory, copies /etc/nixos, and generates config files"
-  print "  4. Labels boot partition (optional)"
-  print "  5. Adds generated files to git"
-  print "  6. Prompts to rebuild the system"
-  print ""
-  print "Options:"
-  print "  --target <name>   Host target (default: nixos)"
-  print "  --skip-clone      Skip cloning/pulling repository"
-  print "  --skip-generate   Skip generating NixOS config files"
-  print "  --skip-rebuild    Skip rebuild prompt"
-  print "  --skip-label      Skip boot partition labeling"
-  print "  --hardware-only   Only generate hardware-configuration.nix"
-  print "  -h, --help        Show this help message"
-  print ""
 }
 
 # NixOS Config Setup Script
@@ -285,16 +276,16 @@ def print-help [] {
 # 1. Clones nix-config repository to ~/.nix-config
 # 2. Generates vars.nix with current user info
 # 3. Creates host directory, copies /etc/nixos, and generates config files
-# 4. Labels boot partition (optional)
-# 5. Adds generated files to git
+# 4. Adds generated files to git
+# 5. Labels boot partition (optional)
 # 6. Prompts to rebuild the system
 def main [
-  --target: string = "nixos"
-  --skip-clone
-  --skip-generate
-  --skip-rebuild
-  --skip-label
-  --hardware-only
+  --target: string = "nixos"  # Host target name (hosts/<target>, flake .#<target>)
+  --skip-clone                # Skip cloning the repository
+  --skip-generate             # Skip generating NixOS config files
+  --skip-rebuild              # Skip rebuild prompt
+  --skip-label                # Skip boot partition labeling
+  --hardware-only             # Only generate hardware-configuration.nix
 ] {
   print $"(ansi green)=== NixOS Config Setup ===(ansi reset)\n"
 

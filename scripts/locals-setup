@@ -1,20 +1,24 @@
 #!/usr/bin/env sh
 
+mkdir -p ~/.config/hypr
+mkdir -p ~/.config/kitty
+mkdir -p ~/.config/mango
+mkdir -p ~/.config/sway
+
 touch ~/.config/hypr/local.conf
 touch ~/.config/kitty/local.conf
 touch ~/.config/mango/local.conf
-touch ~/.config/niri/local.kdl
 touch ~/.config/sway/local
 
 mkdir -p ~/.config/niri/dms
-touch ~/.config/niri/dms/{colors,cursor,layout,alttab,binds}.kdl
+for f in colors cursor layout alttab binds; do touch ~/.config/niri/dms/"$f".kdl; done
 touch ~/.config/niri/local.kdl
 
 mkdir -p ~/.config/hypr/dms
-touch ~/.config/hypr/dms/{colors,cursor,layout,outputs}.conf
+for f in colors cursor layout outputs; do touch ~/.config/hypr/dms/"$f".conf; done
 
 mkdir -p ~/.config/mango/dms
-touch ~/.config/mango/dms/{colors,cursor,layout,outputs}.conf
+for f in colors cursor layout outputs; do touch ~/.config/mango/dms/"$f".conf; done
 
 touch ~/.config/sway/noctalia
 touch ~/.config/mango/noctalia.conf

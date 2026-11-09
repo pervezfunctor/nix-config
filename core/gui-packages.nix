@@ -31,8 +31,7 @@ with pkgs;
   agents.claude-desktop
   agents.chatgpt # ChatGPT + Codex desktop app
   agents.t3code-desktop
-
-  antigravity-fhs
+  antigravity-ide-fhs
   ptyxis
   zed-editor
 

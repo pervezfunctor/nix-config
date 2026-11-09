@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
+# Start an idle daemon: lock, then monitors off, then (optionally) suspend.
+# Usage: idle [--no-suspend]
 
 IDLE_SCRIPTS_DIR="${HOME}/.nix-config/scripts"
+LOCK_CMD="${IDLE_SCRIPTS_DIR}/lock"
+MONITOR_CMD="${IDLE_SCRIPTS_DIR}/monitor"
 SUSPEND_ENABLED=true
 
 LOCK_TIME=180
@@ -21,30 +25,54 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if command -v systemd-detect-virt >/dev/null; then
-  if systemd-detect-virt --quiet; then
-    SUSPEND_ENABLED=false
-  fi
-fi
-
 has_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
-if [[ "$XDG_CURRENT_DESKTOP" == *"Hyprland"* ]] && has_cmd hypridle; then
-  pkill hypridle
-  hypridle_args=(
-    --general "lock_cmd=bash -c '${IDLE_SCRIPTS_DIR}/lock'"
-    --listener "timeout=${LOCK_TIME}" "on-timeout=bash -c '${IDLE_SCRIPTS_DIR}/lock'"
-    --listener "timeout=${DPMS_TIME}" "on-timeout=bash -c '${IDLE_SCRIPTS_DIR}/monitor off'"
-    --listener "on-resume=bash -c '${IDLE_SCRIPTS_DIR}/monitor on'"
-  )
+if has_cmd systemd-detect-virt && systemd-detect-virt --quiet; then
+  SUSPEND_ENABLED=false
+fi
 
-  if [ "$SUSPEND_ENABLED" = true ]; then
-    hypridle_args+=("--listener" "timeout=${SUSPEND_TIME}" "on-timeout=systemctl suspend")
-  fi
+if [[ "$XDG_CURRENT_DESKTOP" == *"Hyprland"* ]]; then
+  has_cmd hypridle || {
+    echo "hypridle not found" >&2
+    exit 1
+  }
+  pkill -xu "$USER" hypridle
 
-  hypridle "${hypridle_args[@]}"
+  # hypridle only takes its settings from a config file.
+  config="${XDG_RUNTIME_DIR:-/tmp}/idle-hypridle.conf"
+  {
+    cat <<EOF
+general {
+  lock_cmd = ${LOCK_CMD}
+  before_sleep_cmd = ${LOCK_CMD}
+  after_sleep_cmd = ${MONITOR_CMD} on
+}
+
+listener {
+  timeout = ${LOCK_TIME}
+  on-timeout = ${LOCK_CMD}
+}
+
+listener {
+  timeout = ${DPMS_TIME}
+  on-timeout = ${MONITOR_CMD} off
+  on-resume = ${MONITOR_CMD} on
+}
+EOF
+    if [[ "$SUSPEND_ENABLED" == true ]]; then
+      cat <<EOF
+
+listener {
+  timeout = ${SUSPEND_TIME}
+  on-timeout = systemctl suspend
+}
+EOF
+    fi
+  } >"$config"
+
+  exec hypridle -c "$config"
 elif [[ "$XDG_CURRENT_DESKTOP" == *"mango"* ]] ||
   [[ "$XDG_CURRENT_DESKTOP" == *"niri"* ]] ||
   [[ "$XDG_CURRENT_DESKTOP" == *"sway"* ]]; then
@@ -52,19 +80,21 @@ elif [[ "$XDG_CURRENT_DESKTOP" == *"mango"* ]] ||
     echo "swayidle not found" >&2
     exit 1
   }
-  pkill swayidle
+  pkill -xu "$USER" swayidle
 
+  # swayidle runs each command through sh -c.
   swayidle_args=(
-    "timeout" "${LOCK_TIME}" "${IDLE_SCRIPTS_DIR}/lock"
-    "timeout" "${DPMS_TIME}" "${IDLE_SCRIPTS_DIR}/monitor off"
-    "resume" "${IDLE_SCRIPTS_DIR}/monitor on"
+    timeout "${LOCK_TIME}" "${LOCK_CMD}"
+    timeout "${DPMS_TIME}" "${MONITOR_CMD} off"
+    resume "${MONITOR_CMD} on"
+    before-sleep "${LOCK_CMD}"
   )
 
-  if [ "$SUSPEND_ENABLED" = true ]; then
-    swayidle_args+=("timeout" "${SUSPEND_TIME}" 'systemctl suspend')
+  if [[ "$SUSPEND_ENABLED" == true ]]; then
+    swayidle_args+=(timeout "${SUSPEND_TIME}" "systemctl suspend")
   fi
 
-  swayidle -w "${swayidle_args[@]}"
+  exec swayidle -w "${swayidle_args[@]}"
 else
   echo "No compatible compositor or idle manager found" >&2
   exit 1

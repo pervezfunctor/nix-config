@@ -1,84 +1,54 @@
-## Manual Installation
+# NixOS Configuration
 
-Get this config on your system with the following commands(manual).
+Flake-based NixOS + home-manager configuration for several hosts and VMs.
 
-First start a nix shell with and your favourite editor
-```bash
-nix-shell -p git micro
-```
+## Layout
 
-Then clone this repository.
+| Path       | Purpose                                                          |
+| ---------- | ---------------------------------------------------------------- |
+| `flake.nix` | Inputs, `nixosConfigurations`, `homeConfigurations`, VM packages |
+| `vars.nix` | Local user/host values (`username`, `homeDirectory`, `hostname`); copy from `vars.nix.example`; keep it staged (flakes need it) but never commit it |
+| `core/`    | Shared system modules: `cli.nix` (base), `gui.nix`, `virt.nix`, `vfio.nix` |
+| `desktop/` | Desktop/WM modules (GNOME, niri, mango, sway, hyprland, portals) |
+| `home/`    | Home-manager modules (dev tools, GUI base, shells like dms/noctalia/caelestia) |
+| `hosts/`   | Per-host `configuration.nix` + `hardware-configuration.nix`     |
+| `config/`  | Dotfiles for apps (kitty, foot, tmux, zed, niri, ...)           |
+| `scripts/` | Setup, VM and helper scripts                                     |
 
-```bash
-git clone https://github.com/pervezfunctor/nix-config.git ~/.nix-config
-```
+## Outputs
 
-Copy your current system configuration.
+NixOS hosts: `bd795-sv`, `bd795`, `gnome-libvirt-vm`, `niri-libvirt-vm`,
+`niri-nuc-vm`, `mango-nuc-vm`, `cli-vm` (headless).
 
-```bash
-cd ~/.nix-config
-rm -rf .git
-mkdir -p hosts/$(hostname)
-cp /etc/nixos/* hosts/$(hostname)/
-```
-Open `flake.nix` in your favourite editor.
+Home configs (standalone home-manager): `cli`, `noctalia`, `dms`, `caelestia`, `dmsOnly`.
 
-```bash
-micro flake.nix
-```
+Every NixOS host also has a QEMU VM package `<host>-vm`.
 
-Copy a section for nixos config like nuc-vm and modify it as you need it. For example minimal configuiration would be the following(You could get your hostname with `hostname` or `hostnamectl hostname` command).
-
-```nix
-"<your-host-name>" = mkOS [ ./hosts/<your-host-name>/configuration.nix ] [];
-```
-
-Add your files to `git stash` and rebuild your nixos with the new configuration. If something fails, remember that your previous build is always available through your bootloader.
+## Usage
 
 ```bash
-git init
-git add .
-sudo nixos-rebuild switch --flake .#
+cp vars.nix.example vars.nix               # then edit
+sudo nixos-rebuild switch --flake .#<host> # apply a NixOS host
+home-manager switch --flake .#<home>       # apply a standalone home config
+nix build .#<host>-vm                      # build a test VM (or: nu scripts/vm.nu)
+scripts/check-configs                      # evaluate all hosts without building
 ```
 
-Create an empty `zsh` rc file.
+## Adding a host
 
-```bash
-touch ~/.zshrc
-```
+1. `mkdir -p hosts/$(hostname) && cp /etc/nixos/* hosts/$(hostname)/`
+2. Add an entry in `flake.nix`:
+   ```nix
+   my-host = mkOS [ ./hosts/my-host/configuration.nix ./desktop/gnome.nix ];
+   ```
+   Use `mkCliOS` instead of `mkOS` for a headless machine.
+3. `git add . && sudo nixos-rebuild switch --flake .#my-host`
 
-Install `vscode` extensions.
-
-```bash
-code --install-extension jnoortheen.nix-ide
-code --install-extension github.github-vscode-theme
-```
-
-Use following vscode settings.
-
-```json
-{
-    "workbench.colorTheme": "GitHub Dark Default",
-    "editor.fontFamily": "JetbrainsMono Nerd Font",
-    "editor.fontSize": 14,
-    "nix.enableLanguageServer": true,
-    "nix.formatterPath": "nixfmt",
-    "nix.serverPath": "nixd",
-    "files.trimTrailingWhitespace": true,
-    "editor.tabSize": 2,
-    "editor.detectIndentation": false,
-    "editor.minimap.enabled": false
-}
-```
-
-Reboot your system. Remember  to commit and push your code to a new repository(github/codeberg).
+Flakes only see git-tracked files, so new files must be `git add`ed before building.
 
 ## Automated setup
 
-To automate the entire setup process, download and run the provided `setup.nu` script:
-
 ```bash
 curl -O https://raw.githubusercontent.com/pervezfunctor/nix-config/main/scripts/setup.nu
-chmod +x setup.nu
 nu setup.nu
 ```

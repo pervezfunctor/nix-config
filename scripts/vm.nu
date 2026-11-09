@@ -8,7 +8,7 @@ def print-help [] {
   print "Target names are automatically appended with '-vm'."
   print ""
   print "Options:"
-  print "  -c, --clean    Remove ./<target>-vm.qcow2 before building"
+  print "  -c, --clean    Remove the VM disk (./<hostname>.qcow2) before building"
   print "  -h, --help     Show this help"
   print ""
 }
@@ -49,7 +49,8 @@ def main [
     $"($target)-vm"
   }
 
-  let qcow = $"./($full_target).qcow2"
+  # NixOS names the VM disk after the hostname, i.e. the target without "-vm".
+  let qcow = $"./($full_target | str replace --regex '-vm$' '').qcow2"
 
   print $"Using target: ($full_target)"
 

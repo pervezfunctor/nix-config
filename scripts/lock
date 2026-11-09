@@ -1,28 +1,41 @@
 #! /usr/bin/env bash
-
-is_running() {
-  pgrep -fu "$USER" "$1" >/dev/null || systemctl --user is-active --quiet "$1"
-}
+# Lock the screen with whichever desktop shell is running, else swaylock.
 
 has_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
+# Running as a user service, or as a process whose executable is named $1.
+# (A bare `pgrep -f name` also matches e.g. an editor open on ~/.config/niri/dms/.)
+is_running() {
+  systemctl --user is-active --quiet "$1" 2>/dev/null ||
+    pgrep -u "$USER" -f "(^|/)$1( |\$)" >/dev/null
+}
+
 lockscreen() {
-  if is_running dms && has_cmd dms; then
-    dms ipc call lock lock
-  elif is_running noctalia-shell && has_cmd noctalia-shell; then
-    noctalia-shell ipc call lockScreen lock
-  elif is_running caelistia-shell && has_cmd caelistia-shell; then
-    # caelestia handles this itself
-    # caelistia-shell ipc call lockscreen lock
-    :
-  elif has_cmd swaylock; then
-    swaylock -f
-  else
-    echo "No lockscreen command found" >&2
-    return 1
+  # If a shell's lock call fails, fall through to the next option rather
+  # than leaving the screen unlocked.
+  if is_running dms && has_cmd dms && dms ipc call lock lock; then
+    return 0
   fi
+
+  if is_running noctalia-shell && has_cmd noctalia-shell &&
+    noctalia-shell ipc call lockScreen lock; then
+    return 0
+  fi
+
+  # caelestia (user service "caelestia", binary caelestia-shell) locks on idle itself.
+  if is_running caelestia || is_running caelestia-shell; then
+    return 0
+  fi
+
+  if has_cmd swaylock; then
+    swaylock -f
+    return
+  fi
+
+  echo "No lockscreen command found" >&2
+  return 1
 }
 
 lockscreen

@@ -55,7 +55,7 @@ with pkgs;
   shellcheck
   shfmt
   tealdeer
-  tectonic
+  # tectonic
   tmux
   trash-cli
   tree

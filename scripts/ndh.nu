@@ -1,129 +1,89 @@
 #!/usr/bin/env nu
 
 # Nix Darwin/Home-Manager/NixOS deployment helper
-# Usage: ndh.nu [flake_path]
-# If no flake_path is provided, uses current directory
+# Usage: ndh.nu [flake_path]   (defaults to current directory)
 
-let flake_path = if ($env.ARGS | length) > 0 {
-    $env.ARGS | get 0
-} else {
-    "."
+const TARGETS = {
+    nixos: "nixosConfigurations"
+    darwin: "darwinConfigurations"
+    home: "homeConfigurations"
 }
 
 def require [cmd: string] {
-    if (which $cmd | length) == 0 {
-        print $"Missing dependency: ($cmd)"
+    if (which $cmd | is-empty) {
+        print -e $"Missing dependency: ($cmd)"
         exit 1
     }
 }
 
-def has_attr [attr: string, flake: string] {
-    let result = do { nix eval --json $"($flake)#($attr)" } | complete
-    $result.exit_code == 0
+# True if the flake has this output. Avoids evaluating the configurations
+# themselves (serializing a whole NixOS config to JSON always fails).
+def has_attr [flake: string, attr: string] {
+    (do { ^nix eval $"($flake)#($attr)" --apply "x: true" } | complete).exit_code == 0
 }
 
-# Check required dependencies upfront
-require nix
-require jq
-require fzf
-
-mut targets = {}
-
-if (has_attr "nixosConfigurations" $flake_path) {
-    $targets = ($targets | merge { nixos: "nixosConfigurations" })
+# Pick one line with fzf; returns "" if cancelled.
+def pick [prompt: string] {
+    let result = $in | to text | do { ^fzf $"--prompt=($prompt)" } | complete
+    if $result.exit_code != 0 { "" } else { $result.stdout | str trim }
 }
 
-if (has_attr "darwinConfigurations" $flake_path) {
-    $targets = ($targets | merge { darwin: "darwinConfigurations" })
-}
-
-if (has_attr "homeConfigurations" $flake_path) {
-    $targets = ($targets | merge { home: "homeConfigurations" })
-}
-
-if ($targets | columns | length) == 0 {
-    print "No supported flake outputs found"
-    exit 1
-}
-
-# Check for darwin-rebuild and home-manager early if those targets exist
-if ($targets | columns | any {|it| $it == "darwin"}) {
-    require darwin-rebuild
-}
-
-if ($targets | columns | any {|it| $it == "home"}) {
-    require home-manager
-}
-
-let target_columns = $targets | columns | sort
-let type_result = do { $target_columns | to text | fzf --prompt="Config type ❯ " } | complete
-
-if $type_result.exit_code != 0 {
-    exit 0
-}
-
-let type = $type_result.stdout | str trim
-
-if ($type | is-empty) {
-    exit 0
-}
-
-let attr = $targets | get $type
-
-let eval_result = do { nix eval --json $"($flake_path)#($attr)" } | complete
-if $eval_result.exit_code != 0 {
-    print $"Failed to evaluate ($attr)"
-    exit 1
-}
-let names = $eval_result.stdout | from json | columns
-
-if ($names | length) == 0 {
-    print $"No targets found for ($type)"
-    exit 1
-}
-
-let name_result = do { $names | to text | fzf --prompt=($"($type) target ❯ ") } | complete
-
-if $name_result.exit_code != 0 {
-    exit 0
-}
-
-let name = $name_result.stdout | str trim
-
-if ($name | is-empty) {
-    exit 0
-}
-
-match $type {
-    "nixos" => {
-        print $"Deploying NixOS configuration: ($name)"
-        let result = do { sudo nixos-rebuild switch --flake $"($flake_path)#($name)" } | complete
-        if $result.exit_code != 0 {
-            print $"Error: nixos-rebuild failed with exit code ($result.exit_code)"
-            exit $result.exit_code
-        }
-        print "✓ NixOS deployment successful"
+# Run a deploy command with live output, reporting the result.
+def deploy [label: string, cmd: list<string>] {
+    print $"Deploying ($label) configuration..."
+    try {
+        run-external ...$cmd
+    } catch {
+        let code = $env.LAST_EXIT_CODE
+        print -e $"Error: ($label) deployment failed with exit code ($code)"
+        exit $code
     }
-    "darwin" => {
-        print $"Deploying Darwin configuration: ($name)"
-        let result = do { darwin-rebuild switch --flake $"($flake_path)#($name)" } | complete
-        if $result.exit_code != 0 {
-            print $"Error: darwin-rebuild failed with exit code ($result.exit_code)"
-            exit $result.exit_code
-        }
-        print "✓ Darwin deployment successful"
-    }
-    "home" => {
-        print $"Deploying Home Manager configuration: ($name)"
-        let result = do { home-manager switch --flake $"($flake_path)#($name)" } | complete
-        if $result.exit_code != 0 {
-            print $"Error: home-manager failed with exit code ($result.exit_code)"
-            exit $result.exit_code
-        }
-        print "✓ Home Manager deployment successful"
-    }
-    _ => {
-        print $"Error: Unknown configuration type: ($type)"
+    print $"✓ ($label) deployment successful"
+}
+
+def main [flake_path: string = "."] {
+    require nix
+    require fzf
+
+    let types = $TARGETS | columns | where {|t| has_attr $flake_path ($TARGETS | get $t) } | sort
+
+    if ($types | is-empty) {
+        print -e $"No supported flake outputs found in ($flake_path)"
         exit 1
+    }
+
+    let type = $types | pick "Config type ❯ "
+    if ($type | is-empty) { exit 0 }
+
+    let attr = $TARGETS | get $type
+    let eval = do { ^nix eval --json $"($flake_path)#($attr)" --apply builtins.attrNames } | complete
+    if $eval.exit_code != 0 {
+        print -e $"Failed to evaluate ($attr)"
+        exit 1
+    }
+    let names = $eval.stdout | from json
+
+    if ($names | is-empty) {
+        print -e $"No targets found for ($type)"
+        exit 1
+    }
+
+    let name = $names | pick $"($type) target ❯ "
+    if ($name | is-empty) { exit 0 }
+
+    let flake_ref = $"($flake_path)#($name)"
+
+    match $type {
+        "nixos" => {
+            deploy $"NixOS ($name)" [sudo nixos-rebuild switch --flake $flake_ref]
+        }
+        "darwin" => {
+            require darwin-rebuild
+            deploy $"Darwin ($name)" [darwin-rebuild switch --flake $flake_ref]
+        }
+        "home" => {
+            require home-manager
+            deploy $"Home Manager ($name)" [home-manager switch --flake $flake_ref]
+        }
     }
 }
