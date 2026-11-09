@@ -117,12 +117,23 @@ def "main vars" [repo_dir: string] {
     confirm-overwrite $vars_file
   }
 
+  # Optional: carry over an existing global git identity, if any.
+  let git_lines = (
+    [[key field]; ["user.name" "gitName"] ["user.email" "gitEmail"]]
+    | each { |it|
+      let value = (do -i { ^git config --global --get $it.key } | complete | get stdout | str trim)
+      if ($value | is-empty) { null } else { $"  ($it.field) = \"($value)\";\n" }
+    }
+    | compact
+    | str join
+  )
+
   let nix_content = $"
 {
   username = \"($username)\";
   homeDirectory = \"($homeDirectory)\";
   hostname = \"($hostname)\";
-}
+($git_lines)}
 "
 
   try {

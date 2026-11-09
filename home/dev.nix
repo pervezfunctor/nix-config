@@ -1,8 +1,64 @@
-{ pkgs, inputs, ... }:
+{
+  lib,
+  pkgs,
+  inputs,
+  vars,
+  ...
+}:
 {
   home.packages = import ../core/cli-packages.nix { inherit pkgs inputs; };
 
   programs = {
+    git = {
+      enable = true;
+      settings = {
+        # gitName/gitEmail are optional in vars.nix; unset ones are omitted.
+        user = lib.mkIf (vars ? gitName || vars ? gitEmail) (
+          lib.optionalAttrs (vars ? gitName) { name = vars.gitName; }
+          // lib.optionalAttrs (vars ? gitEmail) { email = vars.gitEmail; }
+        );
+        safe.directory = "${vars.homeDirectory}/.nix-config";
+        init.defaultBranch = "main";
+        diff = {
+          colorMoved = "default";
+          tool = "difftastic";
+        };
+        difftool = {
+          prompt = false;
+          # Wired by hand: home-manager won't enable delta's and difftastic's
+          # git integrations together.
+          difftastic.cmd = "${lib.getExe pkgs.difftastic} --display=side-by-side --background=dark --color=always $LOCAL $REMOTE";
+        };
+      };
+    };
+
+    # Pager for `git diff`/`show`/`log -p`/`add -p` (and lazygit).
+    delta = {
+      enable = true;
+      enableGitIntegration = true;
+      options = {
+        navigate = true;
+        line-numbers = true;
+        side-by-side = true;
+      };
+    };
+
+    # Structural diffs on demand via `git difftool`.
+    difftastic.enable = true;
+
+    # Registers `gh auth git-credential` as the credential helper for
+    # github.com / gist.github.com. Home-manager regenerates the store path on
+    # every switch, so it never goes stale after GC.
+    gh = {
+      enable = true;
+      gitCredentialHelper.enable = true;
+      settings = {
+        git_protocol = "https";
+        prompt = "enabled";
+        aliases.co = "pr checkout";
+      };
+    };
+
     zsh = {
       enable = true;
     };

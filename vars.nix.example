@@ -2,4 +2,7 @@
   username = "pervez";
   homeDirectory = "/home/pervez";
   hostname = "bd795";
+  # Optional: git user.name / user.email
+  gitName = "Pervez Iqbal";
+  gitEmail = "pervezfunctor@gmail.com";
 }

@@ -7,7 +7,7 @@ Flake-based NixOS + home-manager configuration for several hosts and VMs.
 | Path       | Purpose                                                          |
 | ---------- | ---------------------------------------------------------------- |
 | `flake.nix` | Inputs, `nixosConfigurations`, `homeConfigurations`, VM packages |
-| `vars.nix` | Local user/host values (`username`, `homeDirectory`, `hostname`); copy from `vars.nix.example`; keep it staged (flakes need it) but never commit it |
+| `vars.nix` | Local user/host values (`username`, `homeDirectory`, `hostname`, optional `gitName`/`gitEmail`); copy from `vars.nix.example`; keep it staged (flakes need it) but never commit it |
 | `core/`    | Shared system modules: `cli.nix` (base), `gui.nix`, `virt.nix`, `vfio.nix` |
 | `desktop/` | Desktop/WM modules (GNOME, niri, mango, sway, hyprland, portals) |
 | `home/`    | Home-manager modules (dev tools, GUI base, shells like dms/noctalia/caelestia) |
